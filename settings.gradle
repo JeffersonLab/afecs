@@ -1,0 +1,5 @@
+/*
+ * AFECS Gradle Settings
+ */
+
+rootProject.name = 'afecs'

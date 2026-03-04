@@ -1,0 +1,287 @@
+/*
+ * AFECS (Afecs Control System) Gradle Build Configuration
+ *
+ * Copyright (c) 2017-2026 Jefferson Lab (JLab)
+ * Build system created: 2026-03-04
+ */
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'eclipse'
+    id 'idea'
+}
+
+group = 'org.jlab.coda'
+version = '4.0.0-SNAPSHOT'
+
+// Java version compatibility
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+
+    // Local lib directory as a flat directory repository
+    flatDir {
+        dirs 'lib'
+    }
+
+    // Parent CODA directory for cMsg
+    flatDir {
+        dirs '../cMsg/java/jars/java8'
+    }
+}
+
+dependencies {
+    // Local JAR dependencies from lib/
+    implementation files('lib/CChart.jar')
+    implementation files('lib/jas-plotter-2.2.3.jar')
+    implementation files('lib/jena.jar')
+    implementation files('lib/jfxrt.jar')
+    implementation files('lib/JSAP-2.1.jar')
+    implementation files('lib/jsch-0.1.50.jar')
+    implementation files('lib/msql-jdbc-2-0b5.jar')
+    implementation files('lib/spikechart.jar')
+    implementation files('lib/xercesImpl.jar')
+    implementation files('lib/xml-apis.jar')
+
+    // cMsg from parent directory
+    if (file('../cMsg/java/jars/java8').exists()) {
+        implementation fileTree(dir: '../cMsg/java/jars/java8', include: 'cMsg-*.jar')
+    } else {
+        // Fallback: look for cMsg in lib directory or use a placeholder
+        println "Warning: cMsg not found in ../cMsg/java/jars/java8"
+    }
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// Source sets configuration
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+            exclude 'test/**'
+        }
+        resources {
+            srcDirs = ['db', 'common']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['src/test']
+        }
+    }
+}
+
+// Compilation configuration
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.deprecation = true
+    options.compilerArgs << '-Xlint:unchecked'
+}
+
+// JAR configuration
+jar {
+    archiveBaseName = 'afecs'
+    archiveVersion = version
+
+    manifest {
+        attributes(
+            'Implementation-Title': 'AFECS Control System',
+            'Implementation-Version': version,
+            'Implementation-Vendor': 'Jefferson Lab',
+            'Main-Class': 'org.jlab.coda.afecs.platform.APlatform',
+            'Built-By': System.getProperty('user.name'),
+            'Built-JDK': System.getProperty('java.version'),
+            'Built-Date': new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+// Application plugin configuration for running platform
+application {
+    mainClass = 'org.jlab.coda.afecs.platform.APlatform'
+}
+
+// Custom task to create fat JAR with all dependencies
+task fatJar(type: Jar) {
+    archiveBaseName = 'afecs-all'
+    archiveClassifier = 'fat'
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    with jar
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes(
+            'Main-Class': 'org.jlab.coda.afecs.platform.APlatform'
+        )
+    }
+}
+
+// Task to run platform
+task runPlatform(type: JavaExec) {
+    group = 'application'
+    description = 'Run AFECS Platform'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.jlab.coda.afecs.platform.APlatform'
+    systemProperty 'java.net.preferIPv4Stack', 'true'
+    jvmArgs = ['-Xms200m', '-Xmx2048m']
+}
+
+// Task to run Container
+task runContainer(type: JavaExec) {
+    group = 'application'
+    description = 'Run AFECS Container'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.jlab.coda.afecs.container.AContainer'
+    systemProperty 'java.net.preferIPv4Stack', 'true'
+    jvmArgs = ['-Xms200m', '-Xmx2048m']
+}
+
+// Task to run GUI
+task runGui(type: JavaExec) {
+    group = 'application'
+    description = 'Run AFECS RcGui'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.jlab.coda.afecs.ui.rcgui.RcGuiApplication'
+    systemProperty 'java.net.preferIPv4Stack', 'true'
+    jvmArgs = ['-Xms200m', '-Xmx2048m']
+}
+
+// Task to compile COOL
+task compileCool(type: JavaExec) {
+    group = 'application'
+    description = 'Run COOL Compiler'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.jlab.coda.afecs.cool.parser.CCompiler'
+}
+
+// Clean task
+clean {
+    delete 'build'
+    delete 'bin'
+    delete '.gradle'
+}
+
+// Distribution configuration
+distributions {
+    main {
+        contents {
+            from jar
+            from('bin') {
+                into 'bin'
+                fileMode = 0755
+            }
+            from('lib') {
+                into 'lib'
+            }
+            from('db') {
+                into 'db'
+            }
+            from('common') {
+                into 'common'
+            }
+        }
+    }
+}
+
+// Generate wrapper for Gradle
+wrapper {
+    gradleVersion = '8.5'
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+// Custom task to check for missing dependencies
+task checkDependencies {
+    group = 'verification'
+    description = 'Check if all required dependencies are available'
+
+    doLast {
+        println "Checking dependencies..."
+
+        def libDir = file('lib')
+        def requiredJars = [
+            'CChart.jar',
+            'jas-plotter-2.2.3.jar',
+            'jena.jar',
+            'jfxrt.jar',
+            'JSAP-2.1.jar',
+            'jsch-0.1.50.jar',
+            'msql-jdbc-2-0b5.jar',
+            'spikechart.jar',
+            'xercesImpl.jar',
+            'xml-apis.jar'
+        ]
+
+        def missing = []
+        requiredJars.each { jar ->
+            if (!new File(libDir, jar).exists()) {
+                missing << jar
+            }
+        }
+
+        if (missing.isEmpty()) {
+            println "✓ All required JARs found in lib/"
+        } else {
+            println "✗ Missing JARs in lib/:"
+            missing.each { println "  - ${it}" }
+        }
+
+        // Check for cMsg
+        def cMsgDir = file('../cMsg/java/jars/java8')
+        if (cMsgDir.exists() && cMsgDir.listFiles()?.any { it.name.startsWith('cMsg') }) {
+            println "✓ cMsg found in ${cMsgDir}"
+        } else {
+            println "⚠ cMsg not found in ${cMsgDir} - may need to specify path"
+        }
+    }
+}
+
+// Print build info
+task buildInfo {
+    group = 'help'
+    description = 'Display build information'
+
+    doLast {
+        println """
+        ╔═══════════════════════════════════════════════════════════╗
+        ║  AFECS Build Information                                  ║
+        ╠═══════════════════════════════════════════════════════════╣
+        ║  Project:        ${project.name}
+        ║  Group:          ${project.group}
+        ║  Version:        ${project.version}
+        ║  Java:           ${java.sourceCompatibility} → ${java.targetCompatibility}
+        ║  Gradle:         ${gradle.gradleVersion}
+        ╠═══════════════════════════════════════════════════════════╣
+        ║  Tasks:                                                    ║
+        ║    ./gradlew build          - Build the project            ║
+        ║    ./gradlew fatJar         - Create fat JAR              ║
+        ║    ./gradlew runPlatform    - Run APlatform               ║
+        ║    ./gradlew runContainer   - Run AContainer              ║
+        ║    ./gradlew runGui         - Run RcGui                   ║
+        ║    ./gradlew compileCool    - Run COOL compiler           ║
+        ║    ./gradlew test           - Run tests                   ║
+        ║    ./gradlew checkDeps      - Check dependencies          ║
+        ╚═══════════════════════════════════════════════════════════╝
+        """.stripIndent()
+    }
+}
+
+// Aliases for common tasks
+task checkDeps {
+    dependsOn checkDependencies
+}
+
+// Help task automatically runs buildInfo
+defaultTasks 'buildInfo'
