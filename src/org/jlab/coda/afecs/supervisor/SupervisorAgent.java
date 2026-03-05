@@ -727,44 +727,11 @@ public class SupervisorAgent extends AParent implements Serializable {
      * a file output responsible component/components
      */
     private void setFileWriting() {
-        if (persistencyComponent != null) {
-            if (persistencyComponent.getName().contains("class")) {
-                switch (persistencyComponent.getName()) {
-                    case "ER_class":
-                        for (CodaRCAgent c : myComponents.values()) {
-                            if (c.me.getType().equals(ACodaType.ER.name())) {
-                                System.out.println("DDD ----| Info: setting fileWriting = " +
-                                        s_fileWriting + " for component = " + c.me.getName());
-                                c.agentControlRequestSetFileWriting(s_fileWriting);
-                            }
-                        }
-                        break;
-
-                    case "PEB_class":
-                        for (CodaRCAgent c : myComponents.values()) {
-
-                            if (c.me.getType().equals(ACodaType.PEB.name())) {
-                                c.agentControlRequestSetFileWriting(s_fileWriting);
-                            }
-                        }
-                        break;
-
-                    case "SEB_class":
-                        for (CodaRCAgent c : myComponents.values()) {
-
-                            if (c.me.getType().equals(ACodaType.SEB.name())) {
-                                c.agentControlRequestSetFileWriting(s_fileWriting);
-                            }
-                        }
-                        break;
-                }
-            } else {
-                CodaRCAgent c = myComponents.get(persistencyComponent.getName());
-                if (c != null) {
-                    c.agentControlRequestSetFileWriting(s_fileWriting);
-                }
-            }
-        }
+        FileWritingManager.setFileWriting(
+                myComponents.values(),
+                persistencyComponent,
+                s_fileWriting
+        );
     }
 
     public void supervisorControlRequestFailTransition() {
