@@ -275,10 +275,7 @@ public class CodaRCAgent extends AParent {
 
             // See if this is reconnect request
             if (me.getState().equals(AConstants.connected)) {
-                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                        myName, 5,
-                        AConstants.WARN,
-                        " Client is restarted.");
+                reportEvent("Client is restarted.", 5, AConstants.WARN);
             }
 
             // Subscribe client information
@@ -349,15 +346,7 @@ public class CodaRCAgent extends AParent {
             _setClientCommunications();
         } catch (AException e) {
             e.printStackTrace();
-            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                    me.getName(),
-                    11,
-                    AConstants.ERROR,
-                    e.getMessage());
-            dalogMsg(me.getName(),
-                    11,
-                    AConstants.ERROR,
-                    e.getMessage());
+            reportEvent(e.getMessage(), 11, AConstants.ERROR);
 
             me.setState(AConstants.failed);
             stat = false;
@@ -1172,115 +1161,63 @@ public class CodaRCAgent extends AParent {
 
                     } else if (msg.getType().equals(AConstants.RcResponseGetCodaClass)) {
                         if (!me.getType().equals(AConstants.udf) && !me.getType().equals(txt)) {
-                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                                    myName,
-                                    7,
-                                    AConstants.WARN,
-                                    "Conflict with the clients CodaClass. client-codaClass = " +
+                            reportEvent("Conflict with the clients CodaClass. client-codaClass = " +
                                             txt +
                                             " vs. " +
                                             myName + "-codaClass = " +
-                                            me.getType());
-                            dalogMsg(myName,
+                                            me.getType(),
                                     7,
-                                    AConstants.WARN,
-                                    "Conflict with the clients CodaClass. client-codaClass = " +
-                                            txt +
-                                            " vs. " +
-                                            myName +
-                                            "-codaClass = " +
-                                            me.getType());
+                                    AConstants.WARN);
                         }
                         me.setType(txt);
 
                     } else if (msg.getType().equals(AConstants.RcResponseGetSession)) {
                         if (!me.getSession().equals(txt)) {
-                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                                    myName,
+                            reportEvent("Conflict with the clients session. client-session = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-session = " +
+                                            me.getSession(),
                                     11,
-                                    AConstants.ERROR,
-                                    "Conflict with the clients session. client-session = " +
-                                            txt +
-                                            " vs. " +
-                                            myName +
-                                            "-session = " +
-                                            me.getSession());
-                            dalogMsg(myName, 11, AConstants.ERROR,
-                                    "Conflict with the clients session. client-session = " +
-                                            txt +
-                                            " vs. " +
-                                            myName +
-                                            "-session = " +
-                                            me.getSession());
+                                    AConstants.ERROR);
                         }
 
                     } else if (msg.getType().equals(AConstants.RcResponseGetRunNumber)) {
                         if (me.getRunNumber() != Integer.parseInt(txt)) {
-                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                                    myName,
-                                    11,
-                                    AConstants.ERROR,
-                                    "Conflict with the clients runnumber. client-runnumber = " +
+                            reportEvent("Conflict with the clients runnumber. client-runnumber = " +
                                             txt +
                                             " vs. " +
                                             myName +
                                             "-runnumber = " +
-                                            me.getRunNumber());
-                            dalogMsg(myName,
+                                            me.getRunNumber(),
                                     11,
-                                    AConstants.ERROR,
-                                    "Conflict with the clients runnumber. client-runnumber = " +
-                                            txt +
-                                            " vs. " +
-                                            myName +
-                                            "-runnumber = " +
-                                            me.getRunNumber());
+                                    AConstants.ERROR);
                         }
 
                     } else if (msg.getType().equals(AConstants.RcResponseGetRunType)) {
                         if (!me.getRunType().equals(txt)) {
-                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                                    myName,
-                                    11,
-                                    AConstants.ERROR,
-                                    "Conflict with the clients runType. client-runType = " +
+                            reportEvent("Conflict with the clients runType. client-runType = " +
                                             txt +
                                             " vs. " +
                                             myName +
                                             "-runType = " +
-                                            me.getRunType());
-                            dalogMsg(myName,
+                                            me.getRunType(),
                                     11,
-                                    AConstants.ERROR,
-                                    "Conflict with the clients runType. client-runType = " +
-                                            txt +
-                                            " vs. " +
-                                            myName +
-                                            "-runType = " +
-                                            me.getRunType());
+                                    AConstants.ERROR);
                         }
 
                     } else if (msg.getType().equals(AConstants.RcResponseGetConfigId)) {
                         try {
                             if (me.getConfigID() == Integer.parseInt(txt)) {
-                                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                                        myName,
-                                        11,
-                                        AConstants.ERROR,
-                                        "Conflict with the clients configID. client-configID = " +
+                                reportEvent("Conflict with the clients configID. client-configID = " +
                                                 txt +
                                                 " vs. " +
                                                 myName +
                                                 "-configID = " +
-                                                me.getConfigID());
-                                dalogMsg(myName,
+                                                me.getConfigID(),
                                         11,
-                                        AConstants.ERROR,
-                                        "Conflict with the clients configID. client-configID = " +
-                                                txt +
-                                                " vs. " +
-                                                myName + "-configID = " +
-                                                me.getConfigID());
+                                        AConstants.ERROR);
                             }
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
