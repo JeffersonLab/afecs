@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.ui.rcgui.util;
 
-import javax.accessibility.Accessible;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
@@ -31,15 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class AListDialog extends JComponent implements Accessible {
-    public JDialog dialog;
-    private String InfoTitle;
-    private String GuiTitle;
-
-    /** A return status code - returned if Cancel button has been pressed */
-    public static final int RET_CANCEL = 0;
-    /** A return status code - returned if OK button has been pressed */
-    public static final int RET_OK = 1;
+public class AListDialog extends BaseDialogComponent {
 
     /** list of objects used to furnish the list*/
     public String[] myList;
@@ -49,7 +40,9 @@ public class AListDialog extends JComponent implements Accessible {
 
     /** selected session*/
     private String selectedListElement;
-    private javax.swing.JList sessionsList;
+    private JList sessionsList;
+    private JButton okButton;
+    private JButton cancelButton;
 
     public int status = 0;
 
@@ -58,44 +51,13 @@ public class AListDialog extends JComponent implements Accessible {
     }
 
     /**
-     *
-     * @param  parent               gui container
-     * @return                      JDialog object
-     * @throws HeadlessException    exception thrown in the case environment does not support event
-     */
-    protected JDialog createDialog(Component parent)
-            throws HeadlessException {
-
-        dialog = new JDialog((Frame)parent, GuiTitle, true);
-        dialog.setComponentOrientation(this.getComponentOrientation());
-
-        Container contentPane = dialog.getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(this, BorderLayout.CENTER);
-
-        if (JDialog.isDefaultLookAndFeelDecorated()) {
-            boolean supportsWindowDecorations =
-                    UIManager.getLookAndFeel().getSupportsWindowDecorations();
-            if (supportsWindowDecorations) {
-                dialog.getRootPane().setWindowDecorationStyle(JRootPane.FILE_CHOOSER_DIALOG);
-            }
-        }
-
-        initComponents();
-
-        dialog.pack();
-
-        dialog.setLocationRelativeTo(parent);
-
-        return dialog;
-    }
-
-    /**
+     * Show the dialog with list items.
      *
      * @param parent                   gui container
      * @param ss                       array of strings to be shown in the list
+     * @param cl                       array of color codes (11 = red, moves to top)
      * @param title                    title of the list
-     * @param g_title                 title of the dialog gui
+     * @param g_title                  title of the dialog gui
      * @param selectedItem             preselect the list element name
      * @throws HeadlessException       exception thrown in the case environment does not support event
      */
@@ -109,13 +71,14 @@ public class AListDialog extends JComponent implements Accessible {
 
         myList = ss;
         myColor = cl;
-        InfoTitle = title;
-        GuiTitle = g_title;
+        infoTitle = title;
+        guiTitle = g_title;
 
+        // Move items with color==11 to the top
         int tmpi = myColor[0];
         for(int i=0; i<myColor.length;i++){
             if(myColor[i]==11){
-              String tmp = myList[0];
+                String tmp = myList[0];
                 myList[0] = myList[i];
                 myList[i] = tmp;
                 myColor[0] = 11;
@@ -123,86 +86,54 @@ public class AListDialog extends JComponent implements Accessible {
             }
         }
 
-        dialog = createDialog(parent);
+        // Initialize dialog using base class
+        dialog = initDialog(parent);
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                doClose(RET_CANCEL);
             }
         });
-        if(selectedItem!=null)selectRunType(selectedItem);
+
+        if(selectedItem!=null) selectRunType(selectedItem);
         dialog.setVisible(true);
-
     }
 
-
-    /** @return the string of the selected session */
-    public String getSelectedListElement() {
-        return selectedListElement;
-    }
-
-    /** select the Jlist element
-     * @param runtype to be selected, actually this is the previously selected runtype*/
-    public void selectRunType(String runtype) {
-
-        for(int i=0;i<myList.length;i++){
-            if(myList[i].equalsIgnoreCase(runtype)) {
-                sessionsList.setSelectedIndex(i);
-                return;
-            }
-        }
-    }
-
-    /** This method is called from within the constructor to
-     * initialize the form.
-     */
-    private void initComponents() {
-        JButton okButton = new JButton();
-        JButton cancelButton = new JButton();
+    @Override
+    protected void setupDialogContent() {
+        okButton = new JButton();
+        cancelButton = new JButton();
 
         JComponent jPanel1 = new JPanel();
 
         JLabel jLabel1 = new JLabel();
         JLabel jLabel2 = new JLabel();
         JScrollPane jScrollPane1 = new JScrollPane();
-        sessionsList = new javax.swing.JList();
-
-        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                closeDialog(evt);
-            }
-        });
+        sessionsList = new JList();
 
         okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
+        okButton.addActionListener(evt -> okButtonActionPerformed(evt));
 
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        });
+        cancelButton.addActionListener(evt -> cancelButtonActionPerformed(evt));
 
-        jLabel1.setFont(new java.awt.Font("Lucida Bright", 1, 14));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(InfoTitle);
+        jLabel1.setFont(new Font("Lucida Bright", 1, 14));
+        jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+        jLabel1.setText(infoTitle);
 
-        jLabel2.setFont(new java.awt.Font("Lucida Bright", 1, 14));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setFont(new Font("Lucida Bright", 1, 14));
+        jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
 
         sessionsList.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         sessionsList.setCellRenderer(new MyCellRenderer());
-        sessionsList.setModel(new javax.swing.AbstractListModel() {
+        sessionsList.setModel(new AbstractListModel() {
             String[] strings = myList;
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
 
-        sessionsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        sessionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         sessionsList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 SessionsListMouseClicked(evt);
             }
         });
@@ -230,7 +161,6 @@ public class AListDialog extends JComponent implements Accessible {
                         .addContainerGap()
                         .addComponent(cancelButton)
                         .addContainerGap())
-
                 ))
         );
 
@@ -249,8 +179,6 @@ public class AListDialog extends JComponent implements Accessible {
                         .addContainerGap(23, Short.MAX_VALUE))
         );
 
-
-
         GroupLayout layout = new GroupLayout(dialog.getContentPane());
         dialog.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -261,13 +189,33 @@ public class AListDialog extends JComponent implements Accessible {
                 )
         );
 
-
         layout.setVerticalGroup(
                 layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 )
         );
+    }
+
+    @Override
+    protected JButton getDefaultButton() {
+        return okButton;
+    }
+
+    /** @return the string of the selected session */
+    public String getSelectedListElement() {
+        return selectedListElement;
+    }
+
+    /** select the JList element
+     * @param runtype to be selected, actually this is the previously selected runtype*/
+    public void selectRunType(String runtype) {
+        for(int i=0;i<myList.length;i++){
+            if(myList[i].equalsIgnoreCase(runtype)) {
+                sessionsList.setSelectedIndex(i);
+                return;
+            }
+        }
     }
 
     private void SessionsListMouseClicked(MouseEvent evt) {
@@ -284,7 +232,6 @@ public class AListDialog extends JComponent implements Accessible {
             status = 0;
             doClose(RET_CANCEL);
         }
-
     }
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -292,15 +239,11 @@ public class AListDialog extends JComponent implements Accessible {
         doClose(RET_CANCEL);
     }
 
-    private void closeDialog(java.awt.event.WindowEvent evt) {
-        doClose(RET_CANCEL);
-    }
-
     private void doClose(int retStatus) {
+        setReturnValue(retStatus);
         setVisible(false);
-        dialog.dispose();
+        closeDialog();
     }
-
 
     /**
      *  Inner class for cell rendering, namely coloring list element
