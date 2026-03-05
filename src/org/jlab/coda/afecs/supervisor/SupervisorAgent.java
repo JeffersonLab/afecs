@@ -648,36 +648,10 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     @Deprecated
     public String getIntermediateState() {
-        if (_requestedService != null && _requestedService.equals("CodaRcStartRun")) {
-            List<String> statuses = new ArrayList<>();
-            for (CodaRCAgent c : myComponents.values()) {
-                statuses.add(c.me.getState());
-            }
-            if (statuses.contains("downloading")) {
-                return "downloading";
-            } else if (isAllReport(statuses, AConstants.downloaded)) {
-                return AConstants.downloaded;
-            } else if (statuses.contains("prestarting")) {
-                return "prestarting";
-            } else if (isAllReport(statuses, AConstants.paused)) {
-                return AConstants.prestarted;
-            } else if (statuses.contains("activating")) {
-                return "activating";
-            } else if (isAllReport(statuses, AConstants.active)) {
-                return AConstants.active;
-            }
-        }
-        return AConstants.udf;
-    }
-
-    private Boolean isAllReport(List<String> statuses,
-                                String state) {
-        for (String s : statuses) {
-            if (!s.equals(state)) {
-                return false;
-            }
-        }
-        return true;
+        return ComponentStateAggregator.determineIntermediateState(
+                myComponents.values(),
+                _requestedService
+        );
     }
 
     /**
@@ -688,14 +662,15 @@ public class SupervisorAgent extends AParent implements Serializable {
      * @return true if run is ended
      */
     public boolean isRunEnded() {
-        for (CodaRCAgent c : myComponents.values()) {
-            if (!c.me.getState().equals(AConstants.downloaded)) {
-                return false;
-            }
+        boolean allDownloaded = ComponentStateAggregator.areAllInState(
+                myComponents.values(),
+                AConstants.downloaded
+        );
+        if (allDownloaded) {
+            // stop periodic processes
+            stopPeriodicProcesses();
         }
-        // stop periodic processes
-        stopPeriodicProcesses();
-        return true;
+        return allDownloaded;
     }
 
     /**
