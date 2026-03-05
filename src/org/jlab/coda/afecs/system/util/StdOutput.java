@@ -63,10 +63,12 @@ public class StdOutput {
 
     @Override
     public String toString() {
-        return "StdOutput{" +
-                "stdio='" + stdio + '\'' +
-                ", stdErr='" + stdErr + '\'' +
-                ", exitValue=" + exitValue +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("StdOutput{");
+        sb.append("stdio='").append(stdio).append('\'');
+        sb.append(", stdErr='").append(stdErr).append('\'');
+        sb.append(", exitValue=").append(exitValue);
+        sb.append('}');
+        return sb.toString();
     }
 }

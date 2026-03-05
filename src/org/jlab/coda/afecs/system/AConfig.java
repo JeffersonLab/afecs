@@ -134,25 +134,27 @@ public class AConfig {
     public String toString(){
         String dbPasswd = " ";
         String dbUser = " ";
-        return "Afecs db dir                   = " + coolHome + "\n" +
-                "Platform host                  = " + platformHost + "\n" +
-                "Platform name                  = " + platformName + "\n" +
-                "Platform description           = " + platformDescription + "\n" +
-                "Platform expid                 = " + platformExpid + "\n" +
-                "Platform tcpPort               = " + platformTcpPort + "\n" +
-                "Platform udpPort               = " + platformUdpPort + "\n" +
-                "Platform udl                   = " + platformUdl + "\n" +
-                "Platform muticast udl          = " + platformMulticastUdl + "\n" +
-                "Platform Rc name               = " + platformRcDomainServerName + "\n" +
-                "Platform Rc description        = " + platformRcDomainServerDescription + "\n" +
-                "Platform Rc udpPort            = " + platformRcDomainUdpPort + "\n" +
-                "Platform RcMulticastServer udl = " + platformRcMulticastServerUdl + "\n" +
-                "Cool Core                      = " + AConstants.COOL_CORE + "\n\n" +
-                "Session                        = " + session + "\n" +
-                "Sql db rl                      = " + dbUrl + "\n" +
-                "Sql db driver                  = " + dbDriver + "\n" +
-                "Sql db user                    = " + dbUser + "\n" +
-                "Sql db password                = " + dbPasswd + "\n";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Afecs db dir                   = ").append(coolHome).append("\n");
+        sb.append("Platform host                  = ").append(platformHost).append("\n");
+        sb.append("Platform name                  = ").append(platformName).append("\n");
+        sb.append("Platform description           = ").append(platformDescription).append("\n");
+        sb.append("Platform expid                 = ").append(platformExpid).append("\n");
+        sb.append("Platform tcpPort               = ").append(platformTcpPort).append("\n");
+        sb.append("Platform udpPort               = ").append(platformUdpPort).append("\n");
+        sb.append("Platform udl                   = ").append(platformUdl).append("\n");
+        sb.append("Platform muticast udl          = ").append(platformMulticastUdl).append("\n");
+        sb.append("Platform Rc name               = ").append(platformRcDomainServerName).append("\n");
+        sb.append("Platform Rc description        = ").append(platformRcDomainServerDescription).append("\n");
+        sb.append("Platform Rc udpPort            = ").append(platformRcDomainUdpPort).append("\n");
+        sb.append("Platform RcMulticastServer udl = ").append(platformRcMulticastServerUdl).append("\n");
+        sb.append("Cool Core                      = ").append(AConstants.COOL_CORE).append("\n\n");
+        sb.append("Session                        = ").append(session).append("\n");
+        sb.append("Sql db rl                      = ").append(dbUrl).append("\n");
+        sb.append("Sql db driver                  = ").append(dbDriver).append("\n");
+        sb.append("Sql db user                    = ").append(dbUser).append("\n");
+        sb.append("Sql db password                = ").append(dbPasswd).append("\n");
+        return sb.toString();
     }
 
     /**

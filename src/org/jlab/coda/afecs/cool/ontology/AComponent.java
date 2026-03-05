@@ -775,26 +775,26 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     @Override
     public String toString() {
-        String s = "\n Agent_Data " +
-                "  \n-------------" +
-                "  \nname              = " + name +
-                ", \ntype              = " + type +
-                ", \nsession           = " + session +
-                ", \nrunType           = " + runType +
-                ", \nexpid             = " + expid +
-                ", \nstate             = " + state +
-                ", \neventRate         = " + eventRate +
-                ", \neventRateAverage  = " + eventRateAverage +
-                ", \ndataRate          = " + dataRate +
-                ", \ndataRateAverage   = " + dataRateAverage +
-                ", \nnumberOfLongs     = " + numberOfLongs +
-                ", \neventNumber       = " + eventNumber +
-                ", \nrunNumber         = " + runNumber +
-                ", \nreportingInterval = " + reportingInterval +
-                ", \npriority          = " + priority +
-                ", \nuserConfig        = " + userConfig +
-                "\n";
-        StringBuilder sb = new StringBuilder(s);
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n Agent_Data ");
+        sb.append("  \n-------------");
+        sb.append("  \nname              = ").append(name);
+        sb.append(", \ntype              = ").append(type);
+        sb.append(", \nsession           = ").append(session);
+        sb.append(", \nrunType           = ").append(runType);
+        sb.append(", \nexpid             = ").append(expid);
+        sb.append(", \nstate             = ").append(state);
+        sb.append(", \neventRate         = ").append(eventRate);
+        sb.append(", \neventRateAverage  = ").append(eventRateAverage);
+        sb.append(", \ndataRate          = ").append(dataRate);
+        sb.append(", \ndataRateAverage   = ").append(dataRateAverage);
+        sb.append(", \nnumberOfLongs     = ").append(numberOfLongs);
+        sb.append(", \neventNumber       = ").append(eventNumber);
+        sb.append(", \nrunNumber         = ").append(runNumber);
+        sb.append(", \nreportingInterval = ").append(reportingInterval);
+        sb.append(", \npriority          = ").append(priority);
+        sb.append(", \nuserConfig        = ").append(userConfig);
+        sb.append("\n");
         for (String ip : client.getHostIps()) {
             sb.append("IP = " + ip).append("\n");
         }

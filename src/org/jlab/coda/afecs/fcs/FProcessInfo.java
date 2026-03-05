@@ -61,13 +61,15 @@ public class FProcessInfo {
 
     @Override
     public String toString() {
-        return "FProcessInfo{" +
-                "id=" + id +
-                ", command='" + command + '\'' +
-                ", host='" + host + '\'' +
-                ", currentReportingTime=" + currentReportingTime +
-                ", timeSinceLastReporting=" + timeSinceLastReporting +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("FProcessInfo{");
+        sb.append("id=").append(id);
+        sb.append(", command='").append(command).append('\'');
+        sb.append(", host='").append(host).append('\'');
+        sb.append(", currentReportingTime=").append(currentReportingTime);
+        sb.append(", timeSinceLastReporting=").append(timeSinceLastReporting);
+        sb.append('}');
+        return sb.toString();
     }
 }
 

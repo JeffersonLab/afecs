@@ -50,9 +50,11 @@ public class XMLTagValue {
 
     @Override
     public String toString() {
-        return "XMLTagValue{" +
-                "tag='" + tag + '\'' +
-                ", value='" + value + '\'' +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("XMLTagValue{");
+        sb.append("tag='").append(tag).append('\'');
+        sb.append(", value='").append(value).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

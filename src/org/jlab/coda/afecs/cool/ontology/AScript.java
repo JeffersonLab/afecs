@@ -86,13 +86,15 @@ public class AScript extends AOntologyConcept implements Serializable {
 
     @Override
     public String toString() {
-        return "AScript{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", commandString='" + commandString + '\'' +
-                ", exitCode=" + exitCode +
-                ", sync='" + sync + '\'' +
-                ", timeout=" + timeout +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("AScript{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", commandString='").append(commandString).append('\'');
+        sb.append(", exitCode=").append(exitCode);
+        sb.append(", sync='").append(sync).append('\'');
+        sb.append(", timeout=").append(timeout);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -110,14 +110,16 @@ public class AClientInfo implements Serializable {
 
     @Override
     public String toString() {
-        return "AClientInfo{" +
-                "name='" + name + '\'' +
-                ", hostName='" + hostName + '\'' +
-                ", hostIps=" + Arrays.toString(hostIps) +
-                ", hostBroadcastAddresses=" + Arrays.toString(hostBroadcastAddresses) +
-                ", containerHost='" + containerHost + '\'' +
-                ", portNumber=" + portNumber +
-                ", requestId=" + requestId +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("AClientInfo{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", hostName='").append(hostName).append('\'');
+        sb.append(", hostIps=").append(Arrays.toString(hostIps));
+        sb.append(", hostBroadcastAddresses=").append(Arrays.toString(hostBroadcastAddresses));
+        sb.append(", containerHost='").append(containerHost).append('\'');
+        sb.append(", portNumber=").append(portNumber);
+        sb.append(", requestId=").append(requestId);
+        sb.append('}');
+        return sb.toString();
     }
 }

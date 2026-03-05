@@ -182,22 +182,24 @@ public class AProcess extends AOntologyConcept implements Serializable {
 
     @Override
     public String toString() {
-        return "AProcess{" +
-                "name='" + name + '\'' +
-                ", before='" + before + '\'' +
-                ", after='" + after + '\'' +
-                ", status='" + status + '\'' +
-                ", initiator='" + initiator + '\'' +
-                ", description='" + description + '\'' +
-                ", critical='" + critical + '\'' +
-                ", sync='" + sync + '\'' +
-                ", periodicity=" + periodicity +
-                ", delay=" + delay +
-                ", timeout=" + timeout +
-                ", requestid=" + requestid +
-                ", scripts=" + scripts +
-                ", sendPackages=" + sendPackages +
-                ", receivePackages=" + receivePackages +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("AProcess{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", before='").append(before).append('\'');
+        sb.append(", after='").append(after).append('\'');
+        sb.append(", status='").append(status).append('\'');
+        sb.append(", initiator='").append(initiator).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", critical='").append(critical).append('\'');
+        sb.append(", sync='").append(sync).append('\'');
+        sb.append(", periodicity=").append(periodicity);
+        sb.append(", delay=").append(delay);
+        sb.append(", timeout=").append(timeout);
+        sb.append(", requestid=").append(requestid);
+        sb.append(", scripts=").append(scripts);
+        sb.append(", sendPackages=").append(sendPackages);
+        sb.append(", receivePackages=").append(receivePackages);
+        sb.append('}');
+        return sb.toString();
     }
 }

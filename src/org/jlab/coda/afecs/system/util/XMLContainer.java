@@ -52,8 +52,10 @@ public class XMLContainer {
 
     @Override
     public String toString() {
-        return "XMLContainer{" +
-                "container=" + container +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("XMLContainer{");
+        sb.append("container=").append(container);
+        sb.append('}');
+        return sb.toString();
     }
 }

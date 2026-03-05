@@ -101,16 +101,18 @@ public class FCSConfigData {
 
     @Override
     public String toString() {
-        return "FCSConfigData{" +
-                "commandTemplate='" + commandTemplate + '\'' +
-                ", inputEtName='" + inputEtName + '\'' +
-                ", inputEtHost='" + inputEtHost + '\'' +
-                ", inputEtPort=" + inputEtPort +
-                ", outputEtName='" + outputEtName + '\'' +
-                ", outputEtHost='" + outputEtHost + '\'' +
-                ", outputEtPort=" + outputEtPort +
-                ", nodes=" + nodes +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("FCSConfigData{");
+        sb.append("commandTemplate='").append(commandTemplate).append('\'');
+        sb.append(", inputEtName='").append(inputEtName).append('\'');
+        sb.append(", inputEtHost='").append(inputEtHost).append('\'');
+        sb.append(", inputEtPort=").append(inputEtPort);
+        sb.append(", outputEtName='").append(outputEtName).append('\'');
+        sb.append(", outputEtHost='").append(outputEtHost).append('\'');
+        sb.append(", outputEtPort=").append(outputEtPort);
+        sb.append(", nodes=").append(nodes);
+        sb.append('}');
+        return sb.toString();
     }
 }
 
