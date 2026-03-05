@@ -61,11 +61,19 @@ public class StateTransitioningMonitor implements Runnable {
         stateExpectedResponses =
                 owner.getStateRequiredClientResponse(sn);
         if(stateExpectedResponses.isEmpty() && !sn.equals(AConstants.configured)){
-            owner.reportEvent(" State name for the state = " +
-                            sn +
-                            " is not described in the COOL",
+            owner.reportAlarmMsg(owner.me.getSession() +
+                            "/"+owner.me.getRunType(),owner.myName,
                     11,
-                    AConstants.ERROR);
+                    AConstants.ERROR,
+                    " State name for the state = " +
+                            sn +
+                            " is not described in the COOL");
+            owner.dalogMsg(owner.myName,
+                    11,
+                    AConstants.ERROR,
+                    " State name for the state = " +
+                            sn +
+                            " is not described in the COOL");
         }
     }
 
@@ -87,16 +95,30 @@ public class StateTransitioningMonitor implements Runnable {
 
             // State transition failed
             if(owner.me.getState().equalsIgnoreCase(AConstants.failed)){
-                owner.reportEvent(state2transition +
-                                " transition failed. One or more components are in \"error\" state",
+                owner.reportAlarmMsg(owner.me.getSession()+
+                                "/"+owner.me.getRunType(),
+                        owner.myName,
                         11,
-                        AConstants.ERROR);
+                        AConstants.ERROR,
+                        state2transition +
+                                " transition failed. One or more components are in \"error\" state");
+                owner.dalogMsg(owner.myName,
+                        11,
+                        AConstants.ERROR,
+                        state2transition +
+                                " transition failed. One or more components are in \"error\" state");
 
                 // Client is disconnected
             } else if(owner.me.getState().equals(AConstants.disconnected)){
-                owner.reportEvent(" Lost connection to the client.",
+                owner.reportAlarmMsg(owner.me.getSession()+
+                                "/"+owner.me.getRunType(),owner.myName,
                         11,
-                        AConstants.ERROR);
+                        AConstants.ERROR,
+                        " Lost connection to the client.");
+                owner.dalogMsg(owner.myName,
+                        11,
+                        AConstants.ERROR,
+                        " Lost connection to the client.");
 
                 // Client is reporting. Check reported
                 // responses against the required state name.

@@ -1938,7 +1938,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         //======== this ========
         setTitle("CODA Run Control");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        var contentPane = getContentPane();
+        Container contentPane = getContentPane();
 
         //======== menuBar1 ========
         {
