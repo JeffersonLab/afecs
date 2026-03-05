@@ -34,6 +34,7 @@ import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.process.ProcessManager;
 import org.jlab.coda.afecs.system.util.AfecsTool;
+import org.jlab.coda.afecs.system.util.SubscriptionManager;
 import org.jlab.coda.cMsg.*;
 
 import java.io.File;
@@ -139,6 +140,11 @@ public class AParent extends ABase implements Serializable {
     // Subscription handler for AgentInfoRequest messages
     transient private cMsgSubscriptionHandle infoSH;
 
+    /**
+     * Manages all cMsg subscriptions for this agent.
+     * Provides centralized subscription tracking and cleanup.
+     */
+    protected SubscriptionManager subscriptionManager;
 
     transient public AContainer myContainer;
     transient public APlatform myPlatform;
@@ -155,6 +161,7 @@ public class AParent extends ABase implements Serializable {
      */
     public AParent(AComponent comp, AContainer container, APlatform platform ) {
         super();
+        subscriptionManager = new SubscriptionManager();
         if (comp != null) {
             me = comp;
             myContainer = container;
@@ -176,15 +183,11 @@ public class AParent extends ABase implements Serializable {
 
                 // Subscribe agent info request messages
                 try {
-                    // un-subscribe first
-                    if (myPlatformConnection != null) {
-                        if (infoSH != null) myPlatformConnection.unsubscribe(infoSH);
-                    }
                     // subscribe messages asking information about this agent
-                    infoSH = myPlatformConnection.subscribe(myName,
+                    infoSH = subscriptionManager.subscribe(myPlatformConnection,
+                            myName,
                             AConstants.AgentInfoRequest,
-                            new AgentInfoCB(),
-                            null);
+                            new AgentInfoCB());
                 } catch (cMsgException e) {
                     e.printStackTrace();
                 }
@@ -676,6 +679,26 @@ public class AParent extends ABase implements Serializable {
                         }
                         break;
                 }
+            }
+        }
+    }
+
+    /**
+     * Disconnect from platform and cleanup all subscriptions.
+     * Called when agent is being removed or platform is shutting down.
+     */
+    public void disconnect() {
+        // Unsubscribe all managed subscriptions
+        if (subscriptionManager != null) {
+            subscriptionManager.unsubscribeAll(myPlatformConnection);
+        }
+
+        // Disconnect from platform
+        if (myPlatformConnection != null && myPlatformConnection.isConnected()) {
+            try {
+                myPlatformConnection.disconnect();
+            } catch (cMsgException e) {
+                System.err.println("Error disconnecting: " + e.getMessage());
             }
         }
     }
