@@ -23,7 +23,6 @@
 package org.jlab.coda.afecs.ui.rcgui.util;
 
 
-import javax.accessibility.Accessible;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -34,69 +33,21 @@ import java.awt.event.*;
  *     Slider dialog
  * </p>
  */
-public class ASliderDialog extends JComponent
-        implements Accessible {
+public class ASliderDialog extends BaseDialogComponent {
 
-    public JDialog dialog;
-    private String InfoTitle;
-    private String GuiTitle;
     private int SliderValue;
-
-    // A return status code if Cancel
-    // button has been pressed
-    public static final int RET_CANCEL = 0;
-
-    // A return status code if OK
-    // button has been pressed
-    public static final int RET_OK = 1;
-
-    // selected session
     private int RepInterval;
     public AScrollSlider imSlider;
-    private int returnStatus = RET_CANCEL;
     private JLabel sliderCurrentValue = new JLabel();
-    // max value of the slider
     private int maxValue;
+    private JButton okButton;
+    private JButton cancelButton;
 
     public int status = 0;
 
     public ASliderDialog(int maxValue){
         super();
         this.maxValue = maxValue;
-    }
-
-    /**
-     * <p>
-     *     Creates a dialog
-     * </p>
-     * @param  parent gui container
-     * @return  JDialog object
-     * @throws HeadlessException
-     */
-    protected JDialog createDialog(Component parent) throws HeadlessException {
-
-        dialog = new JDialog((Frame)parent, GuiTitle, true);
-        dialog.setComponentOrientation(this.getComponentOrientation());
-
-        Container contentPane = dialog.getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(this, BorderLayout.CENTER);
-
-        if (JDialog.isDefaultLookAndFeelDecorated()) {
-            boolean supportsWindowDecorations =
-                    UIManager.getLookAndFeel().getSupportsWindowDecorations();
-            if (supportsWindowDecorations) {
-                dialog.getRootPane().setWindowDecorationStyle(JRootPane.FILE_CHOOSER_DIALOG);
-            }
-        }
-
-        initComponents();
-
-        dialog.pack();
-
-        dialog.setLocationRelativeTo(parent);
-
-        return dialog;
     }
 
     /**
@@ -115,62 +66,46 @@ public class ASliderDialog extends JComponent
             throws HeadlessException {
 
         SliderValue = aiv;
-        InfoTitle = title;
-        GuiTitle = g_title;
-        dialog = createDialog(parent);
+        infoTitle = title;
+        guiTitle = g_title;
+
+        // Initialize dialog using base class
+        dialog = initDialog(parent);
         dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                returnStatus = RET_CANCEL;
+                doClose(RET_CANCEL);
             }
         });
         dialog.setVisible(true);
     }
 
-    private void initComponents() {
-        JButton okButton = new JButton();
-        JButton cancelButton = new JButton();
+    @Override
+    protected void setupDialogContent() {
+        okButton = new JButton();
+        cancelButton = new JButton();
         JComponent jPanel1 = new JPanel();
 
         JLabel jLabel1 = new JLabel();
 
-        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                closeDialog(evt);
-            }
-        });
-
         okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
+        okButton.addActionListener(evt -> okButtonActionPerformed(evt));
 
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        });
+        cancelButton.addActionListener(evt -> cancelButtonActionPerformed(evt));
 
-        jLabel1.setFont(new java.awt.Font("Lucida Bright", 1, 14));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(InfoTitle);
+        jLabel1.setFont(new Font("Lucida Bright", 1, 14));
+        jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+        jLabel1.setText(infoTitle);
 
-        sliderCurrentValue.setFont(new java.awt.Font("Lucida Bright", 1, 12));
-        sliderCurrentValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        sliderCurrentValue.setText(InfoTitle+" = "+SliderValue);
+        sliderCurrentValue.setFont(new Font("Lucida Bright", 1, 12));
+        sliderCurrentValue.setHorizontalAlignment(SwingConstants.CENTER);
+        sliderCurrentValue.setText(infoTitle+" = "+SliderValue);
 
         imSlider = new AScrollSlider(Scrollbar.HORIZONTAL, SliderValue, 1, 0, maxValue, maxValue);
-        imSlider.addAdjustmentListener(new AdjustmentListener() {
-            public void adjustmentValueChanged(AdjustmentEvent ae) {
-                RepInterval =  imSlider.getValue();
-                sliderCurrentValue.setText(InfoTitle+" = " + RepInterval);
-
-            }
+        imSlider.addAdjustmentListener(ae -> {
+            RepInterval =  imSlider.getValue();
+            sliderCurrentValue.setText(infoTitle+" = " + RepInterval);
         });
-
-
 
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -194,7 +129,6 @@ public class ASliderDialog extends JComponent
                         .addContainerGap()
                         .addComponent(cancelButton)
                         .addContainerGap())
-
                 ))
         );
 
@@ -215,8 +149,6 @@ public class ASliderDialog extends JComponent
                         .addContainerGap(23, Short.MAX_VALUE))
         );
 
-
-
         GroupLayout layout = new GroupLayout(dialog.getContentPane());
         dialog.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -227,7 +159,6 @@ public class ASliderDialog extends JComponent
                 )
         );
 
-
         layout.setVerticalGroup(
                 layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
@@ -236,13 +167,17 @@ public class ASliderDialog extends JComponent
         );
     }
 
+    @Override
+    protected JButton getDefaultButton() {
+        return okButton;
+    }
 
     /**
      * @return the return status of this dialog
      *         one of RET_OK or RET_CANCEL
      * */
     public int getReturnStatus() {
-        return returnStatus;
+        return getReturnValue();
     }
 
     /**
@@ -254,7 +189,6 @@ public class ASliderDialog extends JComponent
         return String.valueOf(RepInterval);
     }
 
-
     private void okButtonActionPerformed(ActionEvent evt) {
             status = 1;
             doClose(RET_OK);
@@ -265,15 +199,10 @@ public class ASliderDialog extends JComponent
         doClose(RET_CANCEL);
     }
 
-    /** Closes the dialog */
-    private void closeDialog(WindowEvent evt) {
-        doClose(RET_CANCEL);
-    }
-
     private void doClose(int retStatus) {
-        returnStatus = retStatus;
+        setReturnValue(retStatus);
         setVisible(false);
-        dialog.dispose();
+        closeDialog();
     }
 
 }
