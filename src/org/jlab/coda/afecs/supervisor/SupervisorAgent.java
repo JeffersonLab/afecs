@@ -720,89 +720,16 @@ public class SupervisorAgent extends AParent implements Serializable {
      * @return xml string of a file
      */
     public String createRunLogXML(boolean isEnded) {
-
         Map<String, String> remRtv = AfecsTool.readRTVFile(myRunType, mySession);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<coda runtype = ").append("\"").append(myRunType).append("\"").
-                append(" session = ").append("\"").append(mySession).append("\"").
-                append(">").append("\n");
-        sb.append("   <run-start>").append("\n");
-        sb.append("      <run-number>").append(me.getRunNumber()).append("</run-number>").append("\n");
-        sb.append("      <start-time>").append(me.getRunStartTime()).append("</start-time>").append("\n");
-
-        if(me.getDestinationNames()!=null) {
-            for (String fileName : me.getDestinationNames()) {
-                sb.append("      <out-file>").append(fileName).append("</out-file>").append("\n");
-            }
-        }
-        sb.append("      <components>").append("\n");
-
-        // write components data
-        xmlComponentData(sb);
-
-        sb.append("      </components>").append("\n");
-
-        if (remRtv != null && !remRtv.isEmpty()) {
-            sb.append("      <rtvs>").append("\n");
-            for (String rtv : remRtv.keySet()) {
-                String value = remRtv.get(rtv);
-                if (value.contains("&")) value = value.replaceAll("&", "&amp;");
-                sb.append("         <rtv name = ").append("\"").append(rtv).append("\"").
-                        append(" value = ").append("\"").append(value).append("\"").
-                        append("/>").append("\n");
-            }
-            sb.append("      </rtvs>").append("\n");
-        }
-        sb.append("      <update-time>").append(startEndFormatter.format(new Date())).append("</update-time>").append("\n");
-        sb.append("      <total-evt>").append(me.getEventNumber()).append("</total-evt>").append("\n");
-
-        sb.append("   </run-start>").append("\n");
-
-
-        if (isEnded) {
-            sb.append("   <run-end>").append("\n");
-            sb.append("      <end-time>").append(me.getRunEndTime()).append("</end-time>").append("\n");
-            sb.append("      <total-evt>").append(me.getEventNumber()).append("</total-evt>").append("\n");
-            sb.append("      <components>").append("\n");
-
-            // write components data
-            xmlComponentData(sb);
-
-            sb.append("      </components>").append("\n");
-            sb.append("   </run-end>").append("\n");
-        }
-        sb.append("</coda>").append("\n");
-
-        return sb.toString();
-    }
-
-    private void xmlComponentData(StringBuilder sb) {
-        for (CodaRCAgent comp : getMyComponents().values()) {
-            sb.append("         <component name = ").append("\"").append(comp.me.getName()).append("\"").
-                    append(" type = ").append("\"").append(comp.me.getType()).append("\"").
-                    append(">").append("\n");
-            sb.append("            <evt-rate>").append(comp.me.getEventRateAverage()).append("</evt-rate>").append("\n");
-            sb.append("            <data-rate>").append(comp.me.getDataRateAverage()).append("</data-rate>").append("\n");
-            sb.append("            <evt-number>").append(comp.me.getEventNumber()).append("</evt-number>").append("\n");
-            sb.append("            <min-evt-size>").append(comp.me.getMinEventSize()).append("</min-evt-size>").append("\n");
-            sb.append("            <max-evt-size>").append(comp.me.getMaxEventSize()).append("</max-evt-size>").append("\n");
-            sb.append("            <average-evt-size>").append(comp.me.getAvgEventSize()).append("</average-evt-size>").append("\n");
-            sb.append("            <min-evt-build-time>").append(comp.me.getMinTimeToBuild()).append("</min-evt-build-time>").append("\n");
-            sb.append("            <max-evt-build-time>").append(comp.me.getMaxTimeToBuild()).append("</max-evt-build-time>").append("\n");
-            sb.append("            <average-evt-build-time>").append(comp.me.getMeanTimeToBuild()).append("</average-evt-build-time>").append("\n");
-            sb.append("            <chunk-x-et-buffer>").append(comp.me.getChunkXEtBuffer()).append("</chunk-x-et-buffer>").append("\n");
-
-
-            if(comp.me.getDestinationNames()!=null) {
-                for (String cFileName : comp.me.getDestinationNames()) {
-                    sb.append("            <out-file>").append(cFileName).append("</out-file>").append("\n");
-                }
-            }
-
-            sb.append("         </component>").append("\n");
-        }
-
+        RunLogXmlBuilder xmlBuilder = new RunLogXmlBuilder(startEndFormatter);
+        return xmlBuilder.buildRunLogXml(
+                myRunType,
+                mySession,
+                me,
+                getMyComponents().values(),
+                remRtv,
+                isEnded
+        );
     }
 
     public void requestPopUpDialog(String text) {
@@ -1554,28 +1481,20 @@ public class SupervisorAgent extends AParent implements Serializable {
                     me.setNumberOfLongs(ac.me.getNumberOfLongs());
 
                 }
-                // Check if event limit has reached
-                if (me.getEventLimit() > 0 &&
-                        me.getState().equals(AConstants.active)) {
-                    if (me.getEventLimit() < me.getEventNumber()) {
-                        codaRC_stopRun();
-                    }
-                }
+                // Check if any run limits have been exceeded
+                RunLimitChecker.LimitExceeded limitExceeded = RunLimitChecker.checkLimits(
+                        me.getState(),
+                        me.getEventLimit(),
+                        me.getEventNumber(),
+                        me.getTimeLimit(),
+                        me.getRunStartTimeMS(),
+                        me.getDataLimit(),
+                        me.getNumberOfLongs()
+                );
 
-                // Check if time limit has reached (by vg 08.23)
-                if (me.getTimeLimit() > 0 &&
-                        me.getState().equals(AConstants.active)) {
-                    if ( me.getRunStartTimeMS() + me.getTimeLimit() > AfecsTool.getCurrentTimeInMs() ) {
-                        codaRC_stopRun();
-                    }
-                }
-
-                // Check if data limit has reached
-                if (me.getDataLimit() > 0 &&
-                        me.getState().equals(AConstants.active)) {
-                    if (me.getDataLimit() < me.getNumberOfLongs()) {
-                        codaRC_stopRun();
-                    }
+                if (limitExceeded != RunLimitChecker.LimitExceeded.NONE) {
+                    System.out.println("DDD -----| Info: " + RunLimitChecker.getLimitDescription(limitExceeded));
+                    codaRC_stopRun();
                 }
             }
         }
