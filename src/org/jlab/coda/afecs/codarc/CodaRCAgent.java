@@ -81,25 +81,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class CodaRCAgent extends AParent {
 
-    // Subscription handler for the status
-    // messages coming from the coda component
-    private cMsgSubscriptionHandle statusSH;
-
-    // Subscription handler for the daLog
-    // messages coming from the coda component
-    private cMsgSubscriptionHandle daLogSH;
-
-    // Subscription handler for the type =
-    // rc/response messages coming from the
-    // coda component
-    private cMsgSubscriptionHandle responseSH;
-
-    // Subscription handler for cMsg domain
-    // subscription that subscribes to EMU
-    // requesting client to set events per ET
-    // buffer level.
-    private cMsgSubscriptionHandle emuEventsPerEtBufferLevel;
-
     // Used to calculate cumulative moving average
     // for event rate and data rate
     private static int AVERAGE_SIZE = 10;
@@ -646,20 +627,21 @@ public class CodaRCAgent extends AParent {
         if (isRcClientConnected()) {
             try {
                 // subscribe client messages
-                statusSH = myCRCClientConnection.subscribe(myName,
+                subscriptionManager.subscribe(myCRCClientConnection,
+                        myName,
                         AConstants.RcReportStatus,
-                        new StatusMsgCB(),
-                        null);
+                        new StatusMsgCB());
                 startTime = System.currentTimeMillis();
 
-                responseSH = myCRCClientConnection.subscribe(myName,
+                subscriptionManager.subscribe(myCRCClientConnection,
+                        myName,
                         AConstants.RcResponse,
-                        new ResponseMsgCB(),
-                        null);
-                daLogSH = myCRCClientConnection.subscribe(myName,
+                        new ResponseMsgCB());
+
+                subscriptionManager.subscribe(myCRCClientConnection,
+                        myName,
                         AConstants.RcReportDalog,
-                        new DaLogMsgCB(),
-                        null);
+                        new DaLogMsgCB());
 
                 // Ask platform for the linked emu name
                 if (me.getType().equals(ACodaType.ROC.name()) ||
@@ -689,12 +671,10 @@ public class CodaRCAgent extends AParent {
                     if (msg != null && msg.getText() != null) {
                         // Subscribe emu direct messages
                         String emu_name = msg.getText();
-                        emuEventsPerEtBufferLevel =
-                                myPlatformConnection.subscribe(
-                                        emu_name,
-                                        "eventsPerBuffer",
-                                        new RocEvtPerBufferMsgCB(),
-                                        null);
+                        subscriptionManager.subscribe(myPlatformConnection,
+                                emu_name,
+                                "eventsPerBuffer",
+                                new RocEvtPerBufferMsgCB());
                     }
                 }
 
@@ -710,27 +690,24 @@ public class CodaRCAgent extends AParent {
      * </p>
      */
     private void _codaClientUnSubscribe() {
-        if (isRcClientConnected()) {
-            try {
-                if (statusSH != null) myCRCClientConnection.unsubscribe(statusSH);
-                if (responseSH != null) myCRCClientConnection.unsubscribe(responseSH);
-                if (daLogSH != null) myCRCClientConnection.unsubscribe(daLogSH);
-                if (emuEventsPerEtBufferLevel != null)
-                    myPlatformConnection.unsubscribe(emuEventsPerEtBufferLevel);
-            } catch (cMsgException e) {
-                e.printStackTrace();
-            }
+        if (isRcClientConnected() && subscriptionManager != null) {
+            subscriptionManager.unsubscribeAll(myCRCClientConnection);
+            subscriptionManager.unsubscribeAll(myPlatformConnection);
         }
     }
 
     void restartClientStatusSubscription() {
         try {
-            if (statusSH != null) myCRCClientConnection.unsubscribe(statusSH);
-            // subscribe client messages
-            statusSH = myCRCClientConnection.subscribe(myName,
+            // Unsubscribe existing status subscription
+            subscriptionManager.unsubscribe(myCRCClientConnection,
+                    myName,
+                    AConstants.RcReportStatus);
+
+            // Re-subscribe
+            subscriptionManager.subscribe(myCRCClientConnection,
+                    myName,
                     AConstants.RcReportStatus,
-                    new StatusMsgCB(),
-                    null);
+                    new StatusMsgCB());
         } catch (cMsgException e) {
             e.printStackTrace();
         }
