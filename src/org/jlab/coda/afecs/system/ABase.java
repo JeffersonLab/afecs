@@ -1149,7 +1149,7 @@ public class ABase implements Serializable {
      * @param severityId Severity level identifier (0-15, where 9+ is error)
      * @param severity   Severity string (e.g., AConstants.INFO, AConstants.WARN, AConstants.ERROR)
      */
-    protected void reportEvent(String message, int severityId, String severity) {
+    public void reportEvent(String message, int severityId, String severity) {
         reportAlarmMsg(mySession + "/" + myRunType, myName, severityId, severity, message);
         dalogMsg(myName, severityId, severity, message);
     }

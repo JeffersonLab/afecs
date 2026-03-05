@@ -82,19 +82,11 @@ public class ClientHeartBeatMonitor extends Thread{
      */
     private void _issueWarning() {
         if (_absoluteTime % 10 == 0) {
-            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                    owner.myName,
-                    5,
-                    AConstants.WARN,
-                    " Client has not reported for " +
+            owner.reportEvent(" Client has not reported for " +
                             _timeAfterLastReporting / 1000 +
-                            " sec. No operator action is required at this time. Be patient.");
-            owner.dalogMsg(owner.myName,
+                            " sec. No operator action is required at this time. Be patient.",
                     5,
-                    AConstants.WARN,
-                    " Client has not reported for " +
-                            _timeAfterLastReporting / 1000 +
-                            " sec. No operator action is required at this time. Be patient.");
+                    AConstants.WARN);
             _hadWarning = true;
         }
     }
@@ -119,16 +111,7 @@ public class ClientHeartBeatMonitor extends Thread{
 
         if (st.equals(AConstants.udf)) {
             // Client is not responding
-            owner.reportAlarmMsg(owner.me.getSession() +
-                            "/" + owner.me.getRunType(),
-                    owner.myName,
-                    11,
-                    AConstants.ERROR,
-                    " Client is unresponsive.");
-            owner.dalogMsg(owner.myName,
-                    11,
-                    AConstants.ERROR,
-                    " Client is unresponsive.");
+            owner.reportEvent(" Client is unresponsive.", 11, AConstants.ERROR);
             System.out.printf(AfecsTool.getCurrentTime("HH:mm:ss") + " " + owner.myName + ":Info - Client is unresponsive.");
 
             // Reset client last reporting time
@@ -195,16 +178,7 @@ public class ClientHeartBeatMonitor extends Thread{
                 // There was at least one warning message
                 // because client was not reporting.
                 // Inform that client is reporting again
-                owner.reportAlarmMsg(owner.me.getSession() +
-                                "/" + owner.me.getRunType(),
-                        owner.myName,
-                        1,
-                        AConstants.INFO,
-                        " Client resumed reporting. ");
-                owner.dalogMsg(owner.myName,
-                        1,
-                        AConstants.INFO,
-                        " Client resumed reporting. ");
+                owner.reportEvent(" Client resumed reporting. ", 1, AConstants.INFO);
                 _hadWarning = false;
             }
         }
