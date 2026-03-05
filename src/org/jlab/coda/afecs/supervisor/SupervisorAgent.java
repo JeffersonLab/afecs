@@ -881,15 +881,9 @@ public class SupervisorAgent extends AParent implements Serializable {
         send(AConstants.GUI,
                 me.getSession() + "_" + me.getRunType() + "/supervisor",
                 me.getRunTimeDataAsPayload());
-        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                myName,
+        reportEvent(" transition failed.",
                 11,
-                AConstants.ERROR,
-                " transition failed.");
-        dalogMsg(myName,
-                11,
-                AConstants.ERROR,
-                " transition failed.");
+                AConstants.ERROR);
 
         // Ask components to reset
         _moveToState(AConstants.reseted);
