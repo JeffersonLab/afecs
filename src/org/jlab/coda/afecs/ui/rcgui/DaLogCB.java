@@ -23,32 +23,20 @@
 package org.jlab.coda.afecs.ui.rcgui;
 
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.cMsg.cMsgCallbackAdapter;
 import org.jlab.coda.cMsg.cMsgMessage;
 
 import javax.swing.*;
 import java.util.concurrent.ExecutionException;
 
-public class DaLogCB extends cMsgCallbackAdapter {
-
-    private CodaRcGui owner;
+public class DaLogCB extends BaseMessageCallback {
 
     public DaLogCB(CodaRcGui owner){
-        this.owner = owner;
+        super(owner);
     }
 
-    /************************************************************************
-     * Private inner class for responding messages from supervisor agent of the specific control system.
-     */
-    public void callback(cMsgMessage msg, Object userObject){
-        if(msg!=null) {
-
-            String type = msg.getType();
-            if (type != null) {
-                AAction a = new AAction(msg);
-                a.execute();
-            }
-        }
+    @Override
+    protected SwingWorker<?, ?> createAction(cMsgMessage msg) {
+        return new AAction(msg);
     }
 
     private class AAction extends SwingWorker<Integer, Void> {

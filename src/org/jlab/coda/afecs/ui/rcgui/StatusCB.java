@@ -31,7 +31,6 @@ import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.afecs.system.util.LinkedConcurrentHashMap;
 import org.jlab.coda.afecs.ui.rcgui.util.AAgentData;
 import org.jlab.coda.afecs.ui.rcgui.util.chart.fx.FxAnimatedBarChart;
-import org.jlab.coda.cMsg.cMsgCallbackAdapter;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
 
@@ -59,11 +58,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *         Date: 11/7/14 Time: 2:51 PM
  * @version 4.x
  */
-class StatusCB extends cMsgCallbackAdapter {
+class StatusCB extends BaseMessageCallback {
 
     private boolean tableUpdateFlag = true;
-
-    private CodaRcGui owner;
 
     // run-control specific data, subset of the agents
     // reported data, shown on the rcGUI component table
@@ -84,19 +81,14 @@ class StatusCB extends cMsgCallbackAdapter {
     private PeriodicEx atx;
 
     StatusCB(CodaRcGui owner) {
-        this.owner = owner;
+        super(owner);
         atx = new PeriodicEx(10000);
         atx.start();
     }
 
-    public void callback(cMsgMessage msg, Object userObject) {
-        if (msg != null) {
-            String type = msg.getType();
-
-            if (type != null) {
-                new AAction(msg).execute();
-            }
-        }
+    @Override
+    protected SwingWorker<?, ?> createAction(cMsgMessage msg) {
+        return new AAction(msg);
     }
 
     public void exit() {
