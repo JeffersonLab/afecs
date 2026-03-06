@@ -593,9 +593,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * </p>
      */
     private void stopServiceExecutionThread() {
-        if (es != null && !es.isTerminated() && !es.isShutdown()) {
-            es.shutdownNow();
-        }
+        AfecsTool.shutdownExecutorService(es);
     }
 
     /**

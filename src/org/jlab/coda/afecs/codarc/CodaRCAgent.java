@@ -721,9 +721,7 @@ public class CodaRCAgent extends AParent {
      * </p>
      */
     private void _stopStateTransitioningMonitor() {
-        if (es != null && !es.isTerminated() && !es.isShutdown()) {
-            es.shutdownNow();
-        }
+        AfecsTool.shutdownExecutorService(es);
     }
 
     /**

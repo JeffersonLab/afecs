@@ -428,7 +428,8 @@ public class AParent extends ABase implements Serializable {
                                 return true;
                             }
                     );
-                    if (executorService.isTerminated()) throw new Error("unexpected");
+                    // Shutdown executor after task submission to prevent resource leak
+                    executorService.shutdown();
 
                     isTransitioning.set(false);
                     break;

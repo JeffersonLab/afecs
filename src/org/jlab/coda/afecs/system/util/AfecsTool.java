@@ -49,6 +49,8 @@ import java.net.UnknownHostException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -1190,6 +1192,50 @@ public class AfecsTool {
         ArrayList<String> bl = new ArrayList<>(Arrays.asList(b));
         al.addAll(bl);
         return al.toArray(new String[al.size()]);
+    }
+
+    /**
+     * Safely shutdown an ExecutorService.
+     *
+     * <p>Attempts graceful shutdown first, then forces shutdown if necessary.
+     * This method handles the common pattern of checking if the executor is
+     * already terminated or shutdown before attempting to shut it down.</p>
+     *
+     * @param executorService The ExecutorService to shutdown
+     */
+    public static void shutdownExecutorService(ExecutorService executorService) {
+        if (executorService != null && !executorService.isTerminated() && !executorService.isShutdown()) {
+            executorService.shutdownNow();
+        }
+    }
+
+    /**
+     * Safely shutdown an ExecutorService with a grace period.
+     *
+     * <p>Attempts graceful shutdown first with the specified timeout.
+     * If tasks don't complete within the timeout, forces immediate shutdown.</p>
+     *
+     * @param executorService The ExecutorService to shutdown
+     * @param timeoutSeconds  Seconds to wait for graceful shutdown
+     * @return true if shutdown completed within timeout, false if forced
+     */
+    public static boolean shutdownExecutorService(ExecutorService executorService, long timeoutSeconds) {
+        if (executorService == null || executorService.isTerminated() || executorService.isShutdown()) {
+            return true;
+        }
+
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(timeoutSeconds, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+                return false;
+            }
+            return true;
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     public static void main(String[] args) {
