@@ -26,6 +26,15 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing a run control option.
+ *
+ * <p>Options define configurable parameters for run control operation,
+ * including run limits, data logging, and monitoring settings.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AOption extends AOntologyConcept implements Serializable {
     private String configFile     = AConstants.udf;
     private String configString   = AConstants.udf;

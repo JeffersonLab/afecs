@@ -26,6 +26,15 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing a CODA service.
+ *
+ * <p>Services define operations that can be executed by agents,
+ * including state machine transitions and control actions.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AService extends AOntologyConcept implements Serializable {
 
     private String name                 = AConstants.udf;

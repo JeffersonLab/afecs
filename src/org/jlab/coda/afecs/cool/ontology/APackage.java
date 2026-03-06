@@ -27,6 +27,15 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing a data package.
+ *
+ * <p>Packages define data structures to be sent or received
+ * during process execution, containing name-value pairs for messaging.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class APackage extends AOntologyConcept implements Serializable {
     private String name;
     private String isForRcClient      = AConstants.udf;

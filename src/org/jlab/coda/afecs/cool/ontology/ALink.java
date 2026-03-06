@@ -26,6 +26,15 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing a link between components.
+ *
+ * <p>Links define data transport connections between CODA components,
+ * specifying source and destination endpoints and transport protocol (ET, cMsg, etc).</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class ALink extends AOntologyConcept implements Serializable {
     private String name                     = AConstants.udf;
     private String description              = AConstants.udf;

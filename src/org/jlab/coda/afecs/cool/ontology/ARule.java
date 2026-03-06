@@ -24,6 +24,15 @@ package org.jlab.coda.afecs.cool.ontology;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing a state machine rule.
+ *
+ * <p>Rules define conditional logic and state transitions for
+ * the CODA state machine.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class ARule extends AOntologyConcept implements Serializable {
 
     private String name;

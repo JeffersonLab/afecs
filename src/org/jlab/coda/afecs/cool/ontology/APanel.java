@@ -27,6 +27,15 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing a UI panel.
+ *
+ * <p>Panels define graphical interface layouts containing widgets
+ * for displaying and controlling run control parameters.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class APanel extends AOntologyConcept implements Serializable, Cloneable {
     private String name;
     private String color;

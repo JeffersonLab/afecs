@@ -24,6 +24,15 @@ package org.jlab.coda.afecs.cool.ontology;
 
 import java.io.Serializable;
 
+/**
+ * Represents a slot (attribute) in a COOL ontology concept.
+ *
+ * <p>Slots define properties and their constraints for ontology concepts,
+ * including name, type, cardinality, and whether they are required.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AOntologySlot implements Serializable {
 
     public void setName(String name) {

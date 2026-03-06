@@ -24,6 +24,15 @@ package org.jlab.coda.afecs.cool.ontology;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing a communication plugin.
+ *
+ * <p>Plugins define custom communication implementations for
+ * different DAQ systems and protocols.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class APlugin extends AOntologyConcept implements Serializable {
     private String className;
 

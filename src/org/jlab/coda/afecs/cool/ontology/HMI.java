@@ -25,6 +25,15 @@ package org.jlab.coda.afecs.cool.ontology;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing Human-Machine Interface configuration.
+ *
+ * <p>HMI defines the GUI layout and widgets for run control monitoring
+ * and control operations.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class HMI extends AOntologyConcept implements Serializable {
 
 

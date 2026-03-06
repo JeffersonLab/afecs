@@ -24,6 +24,15 @@ package org.jlab.coda.afecs.cool.ontology;
 
 import java.util.ArrayList;
 
+/**
+ * Interface for COOL ontology implementations.
+ *
+ * <p>Defines the contract for ontology providers that supply
+ * concepts and metadata for the AFECS control system.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public interface AOntology {
 
     String getName();

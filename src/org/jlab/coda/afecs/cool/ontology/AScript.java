@@ -26,6 +26,15 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import java.io.Serializable;
 
+/**
+ * COOL ontology concept representing an executable script.
+ *
+ * <p>Scripts contain command strings to be executed by processes,
+ * along with timeout and synchronization settings.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AScript extends AOntologyConcept implements Serializable {
     private String name          = AConstants.udf;
     private String description   = AConstants.udf;

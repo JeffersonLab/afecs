@@ -27,6 +27,15 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing a run control configuration.
+ *
+ * <p>Contains the complete configuration for a CODA run control,
+ * including components, supervisor, and control options.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AControl extends AOntologyConcept implements Serializable, Cloneable{
     private ArrayList<AComponent> components = new ArrayList<AComponent>();
     private AComponent supervisor;

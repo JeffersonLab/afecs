@@ -27,6 +27,15 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing a UI widget.
+ *
+ * <p>Widgets define interactive GUI elements for displaying and
+ * controlling run control parameters and component states.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AWidget extends AOntologyConcept implements Serializable, Cloneable {
     private String name;
     private String title;

@@ -24,6 +24,15 @@ package org.jlab.coda.afecs.cool.parser;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a conditional expression in COOL parser.
+ *
+ * <p>Conditions contain boolean expressions with operators (AND, OR)
+ * and statements for use in state machine rules and scripting.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class ACondition {
     private String keyWord;
     private ArrayList<String> conditionalOperators = new ArrayList<String>();

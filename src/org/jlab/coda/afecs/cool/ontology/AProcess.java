@@ -27,6 +27,16 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * COOL ontology concept representing a process to be executed.
+ *
+ * <p>Processes can be executed before or after state transitions,
+ * periodically, or on-demand. Each process contains scripts to execute
+ * and packages to send/receive.</p>
+ *
+ * @author gurjyan
+ * @version 4.x
+ */
 public class AProcess extends AOntologyConcept implements Serializable {
     private String name;
     private String before      = AConstants.udf;
