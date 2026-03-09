@@ -1,7 +1,7 @@
 # AFECS Gradle Build System - Quick Start Guide
 
 **Created:** 2026-03-04
-**Author:** Claude Code
+**Author:** Vardan Gyurjyan
 **Purpose:** Quick reference for using Gradle with AFECS
 
 ---
