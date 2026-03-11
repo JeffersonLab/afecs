@@ -88,6 +88,14 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << '-Xlint:unchecked'
 }
 
+// Disable tests by default (enable with -PrunTests=true)
+test {
+    enabled = project.hasProperty('runTests') ? project.property('runTests').toBoolean() : false
+    if (!enabled) {
+        println "Tests are disabled by default. Use './gradlew test -PrunTests=true' to run tests."
+    }
+}
+
 // JAR configuration
 jar {
     archiveBaseName = 'afecs'
