@@ -468,7 +468,9 @@ public class RcApi extends ABase {
         }
         if (msg != null && msg.getByteArray() != null) {
             try {
-                l = (ArrayList<AComponent>) AfecsTool.B2O(msg.getByteArray());
+                @SuppressWarnings("unchecked")
+                ArrayList<AComponent> temp = (ArrayList<AComponent>) AfecsTool.B2O(msg.getByteArray());
+                l = temp;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -616,7 +618,9 @@ public class RcApi extends ABase {
         }
         if (msg != null && msg.getByteArray() != null) {
             try {
-                rtvs = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
+                @SuppressWarnings("unchecked")
+                Map<String, String> temp = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
+                rtvs = temp;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {

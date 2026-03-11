@@ -127,6 +127,7 @@ public class DbDriver {
                 if(msg!=null && msg.getByteArray()!=null && msg.getByteArrayLength()>0){
                     try {
                         // get platform registered agents hash map
+                        @SuppressWarnings("unchecked")
                         ConcurrentHashMap<String, AComponent> registeredComs =
                                 (ConcurrentHashMap<String, AComponent>) AfecsTool.B2O(msg.getByteArray());
 
@@ -180,7 +181,9 @@ public class DbDriver {
 
         if(msgb!=null && msgb.getByteArray()!=null){
             try {
-                smap = (ConcurrentHashMap<String,ASessionInfo>)AfecsTool.B2O(msgb.getByteArray());
+                @SuppressWarnings("unchecked")
+                ConcurrentHashMap<String,ASessionInfo> temp = (ConcurrentHashMap<String,ASessionInfo>)AfecsTool.B2O(msgb.getByteArray());
+                smap = temp;
             } catch (IOException | ClassNotFoundException e) {
                 throw new AException(e.getMessage());
             }
@@ -227,7 +230,9 @@ public class DbDriver {
         if(msgb!=null &&
                 msgb.getByteArray()!=null){
             try {
-                dNames = (ArrayList<String>)AfecsTool.B2O(msgb.getByteArray());
+                @SuppressWarnings("unchecked")
+                ArrayList<String> temp = (ArrayList<String>)AfecsTool.B2O(msgb.getByteArray());
+                dNames = temp;
             } catch (IOException | ClassNotFoundException e) {
                 throw new AException(e.getMessage());
             }

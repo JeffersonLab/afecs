@@ -1269,7 +1269,9 @@ class AControlDesigner extends ABase {
                     Map<String, String> setRTVs = null;
                     if (msg.getByteArray() != null) {
                         try {
-                            setRTVs = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
+                            @SuppressWarnings("unchecked")
+                            Map<String, String> temp = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
+                            setRTVs = temp;
                         } catch (IOException | ClassNotFoundException e) {
                             e.printStackTrace();
                         }

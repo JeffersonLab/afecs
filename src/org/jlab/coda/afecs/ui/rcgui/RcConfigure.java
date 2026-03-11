@@ -121,6 +121,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                     }
 
                     try {
+                        @SuppressWarnings("unchecked")
                         Map<String, String> remRtv = (Map<String, String>) AfecsTool.B2O(m.getByteArray());
 
                         // we got back those rtvs that are actually defined in the cool

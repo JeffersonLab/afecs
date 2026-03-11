@@ -320,13 +320,15 @@ public class AParent extends ABase implements Serializable {
         if (me != null && me.getPlugin() != null) {
             APlugin p = me.getPlugin();
             try {
-                Class c = Class.forName(p.getClassName());
-                myPlugin = (IAClientCommunication) c.newInstance();
+                Class<?> c = Class.forName(p.getClassName());
+                myPlugin = (IAClientCommunication) c.getDeclaredConstructor().newInstance();
                 myPlugin.setWorkingFor(myName);
                 myPlugin.init();
             } catch (ClassNotFoundException |
                     IllegalAccessException |
                     InstantiationException |
+                    NoSuchMethodException |
+                    java.lang.reflect.InvocationTargetException |
                     AException e) {
                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                         me.getName(),

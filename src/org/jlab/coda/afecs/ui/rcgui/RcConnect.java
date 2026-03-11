@@ -125,6 +125,7 @@ public class RcConnect extends SwingWorker<String, Void> {
 
             if(m!=null && m.getByteArray()!=null){
                 try{
+                    @SuppressWarnings("unchecked")
                     Map<String,String> remRtv = (Map<String,String>) AfecsTool.B2O(m.getByteArray());
 
                     // we got back those rtvs that are actually

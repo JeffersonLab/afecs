@@ -169,13 +169,13 @@ public class PConsole extends JFrame {
         rcUdpTextField = new JTextField();
         udpTextField = new JTextField();
         scrollPane1 = new JScrollPane();
-        AgentList = new JList();
+        AgentList = new JList<>();
         scrollPane2 = new JScrollPane();
-        SupervisorList = new JList();
+        SupervisorList = new JList<>();
         scrollPane3 = new JScrollPane();
-        SessionList = new JList();
+        SessionList = new JList<>();
         scrollPane4 = new JScrollPane();
-        ContainerList = new JList();
+        ContainerList = new JList<>();
         scrollPane5 = new JScrollPane();
         stdioTextArea = new JTextArea();
         label13 = new JLabel();
@@ -244,9 +244,9 @@ public class PConsole extends JFrame {
             AgentList.setForeground(new Color(0, 102, 102));
             AgentList.setBorder(new TitledBorder(null, "Agents", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, new Color(0, 102, 102)));
             AgentList.setCellRenderer(new ListRender());
-            AgentList.setModel(new javax.swing.AbstractListModel() {
+            AgentList.setModel(new javax.swing.AbstractListModel<String>() {
             public int getSize() { return agents.length; }
-            public Object getElementAt(int i) { return agents[i]; }
+            public String getElementAt(int i) { return agents[i]; }
             });
 
             AgentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -265,9 +265,9 @@ public class PConsole extends JFrame {
             SupervisorList.setForeground(new Color(0, 102, 102));
             SupervisorList.setBorder(new TitledBorder(null, "Supervisors", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, new Color(0, 102, 102)));
             SupervisorList.setCellRenderer(new ListRender());
-            SupervisorList.setModel(new javax.swing.AbstractListModel() {
+            SupervisorList.setModel(new javax.swing.AbstractListModel<String>() {
             public int getSize() { return supervisors.length; }
-            public Object getElementAt(int i) { return supervisors[i]; }
+            public String getElementAt(int i) { return supervisors[i]; }
             });
 
             SupervisorList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -286,9 +286,9 @@ public class PConsole extends JFrame {
             SessionList.setForeground(new Color(0, 102, 102));
             SessionList.setBorder(new TitledBorder(null, "Sessions", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, new Color(0, 102, 102)));
             SessionList.setCellRenderer(new ListRender());
-            SessionList.setModel(new javax.swing.AbstractListModel() {
+            SessionList.setModel(new javax.swing.AbstractListModel<String>() {
             public int getSize() { return sessions.length; }
-            public Object getElementAt(int i) { return sessions[i]; }
+            public String getElementAt(int i) { return sessions[i]; }
             });
 
             SessionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -307,9 +307,9 @@ public class PConsole extends JFrame {
             ContainerList.setForeground(new Color(0, 102, 102));
             ContainerList.setBorder(new TitledBorder(null, "Containers", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, new Color(0, 102, 102)));
             ContainerList.setCellRenderer(new ListRender());
-            ContainerList.setModel(new javax.swing.AbstractListModel() {
+            ContainerList.setModel(new javax.swing.AbstractListModel<String>() {
             public int getSize() { return containers.length; }
-            public Object getElementAt(int i) { return containers[i]; }
+            public String getElementAt(int i) { return containers[i]; }
             });
 
             ContainerList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -462,13 +462,13 @@ public class PConsole extends JFrame {
     private JTextField rcUdpTextField;
     private JTextField udpTextField;
     private JScrollPane scrollPane1;
-    private JList AgentList;
+    private JList<String> AgentList;
     private JScrollPane scrollPane2;
-    private JList SupervisorList;
+    private JList<String> SupervisorList;
     private JScrollPane scrollPane3;
-    private JList SessionList;
+    private JList<String> SessionList;
     private JScrollPane scrollPane4;
-    private JList ContainerList;
+    private JList<String> ContainerList;
     private JScrollPane scrollPane5;
     private JTextArea stdioTextArea;
     private JLabel label13;

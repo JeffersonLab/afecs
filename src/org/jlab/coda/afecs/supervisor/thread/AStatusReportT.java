@@ -236,9 +236,9 @@ public class AStatusReportT extends Thread {
 
 
                     // get the second (the first might be -clas component) entry of the agents map and define the state of the agent
-                    Iterator it = owner.sortedComponentList.entrySet().iterator();
-                    Map.Entry<String, AComponent> entry1 = (Map.Entry<String, AComponent>) it.next();
-                    Map.Entry<String, AComponent> entry2 = (Map.Entry<String, AComponent>) it.next();
+                    Iterator<Map.Entry<String, AComponent>> it = owner.sortedComponentList.entrySet().iterator();
+                    Map.Entry<String, AComponent> entry1 = it.next();
+                    Map.Entry<String, AComponent> entry2 = it.next();
 
                     String tmpState = AConstants.booted;
                     if (entry1 != null && !entry1.getValue().getState().equals("na")) {

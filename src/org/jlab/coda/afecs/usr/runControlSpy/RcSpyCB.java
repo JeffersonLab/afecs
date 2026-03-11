@@ -63,7 +63,9 @@ public class RcSpyCB extends cMsgCallbackAdapter {
                     Map<String, AComponent> cmpU = null;
                     try {
                         if (msg.getByteArray() != null) {
-                            cmpU = (Map<String, AComponent>) AfecsTool.B2O(msg.getByteArray());
+                            @SuppressWarnings("unchecked")
+                            Map<String, AComponent> temp = (Map<String, AComponent>) AfecsTool.B2O(msg.getByteArray());
+                            cmpU = temp;
                         }
                     } catch (IOException e) {
                         if (AConstants.debug.get()) e.printStackTrace();
