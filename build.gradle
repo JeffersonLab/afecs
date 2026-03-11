@@ -177,10 +177,9 @@ task compileCool(type: JavaExec) {
     mainClass = 'org.jlab.coda.afecs.cool.parser.CCompiler'
 }
 
-// Clean task
+// Clean task (keep bin/ for launcher scripts)
 clean {
     delete 'build'
-    delete 'bin'
     delete '.gradle'
 }
 

@@ -25,7 +25,6 @@ DESCRIPTION:
 OPTIONS:
     -archive        Start daLogMsg archiving normative agent
     -debug          Activate debugging flag
-    -web            Enable web monitoring (InfluxDB integration)
     -h, -help       Display this help message
 
 ENVIRONMENT:
@@ -39,8 +38,8 @@ EXAMPLES:
     # Start platform with debugging enabled
     platform -debug
 
-    # Start platform with archiving and web monitoring
-    platform -archive -web
+    # Start platform with archiving
+    platform -archive
 
 NOTES:
     The platform uses a configuration file (afecs.properties) from the

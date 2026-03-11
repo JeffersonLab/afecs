@@ -256,10 +256,6 @@ public class AConstants {
     public static final String PlatformInfoRequestReadConfgiFile = "platform/info/request/readConfigFile";
     public static final String PlatformInfoRequestGetRocDataLink = "platform/info/request/getRocDataLink";
 
-    public static final String InfluxDBInjectRequest = "influx/inject/request/*";
-    public static final String InfluxDBInjectRequestUserData = "influx/inject/request/user";
-    public static final String InfluxDBInjectRequestPlatformData = "influx/inject/request/user/platform";
-
 
     /***********************************************************************
      *

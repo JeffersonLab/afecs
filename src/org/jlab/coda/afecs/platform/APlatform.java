@@ -69,8 +69,6 @@ public class APlatform extends ABase {
     // network cards of a local host
     private Collection<String> platform_ips;
 
-    public static boolean influxDb = false;
-
     /**
      * <p>
      * Platform main method
@@ -87,15 +85,11 @@ public class APlatform extends ABase {
                 case "-debug":
                     AConstants.debug.set(true);
                     break;
-                case "-web":
-                    influxDb = true;
-                    break;
                 case "-h":
                 case "-help":
                     System.out.println("Synopsis: platform -<option> <value>\n"
                             + "-h or -help\n"
                             + "-archive  [starts daLogMsg archiving normative agent] \n"
-                            + "-web      [Enable web monitoring] \n"
                             + "-debug    [activates debugging flag] \n");
                     System.exit(0);
             }
