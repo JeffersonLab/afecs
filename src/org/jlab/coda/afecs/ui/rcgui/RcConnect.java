@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.ui.rcgui;
 
 import org.jlab.coda.afecs.system.AConstants;
+import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
@@ -108,10 +109,19 @@ public class RcConnect extends SwingWorker<String, Void> {
 
             // ask platform registrar to return rtv
             // file content for a defined runType
-            cMsgMessage m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
-                    AConstants.DesignerInfoRequestGetDefinedRTVs,
-                    al,
-                    AConstants.TIMEOUT);
+            cMsgMessage m = null;
+            try {
+                m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
+                        AConstants.DesignerInfoRequestGetDefinedRTVs,
+                        al,
+                        AConstants.TIMEOUT);
+            } catch (AException e) {
+                // Control designer may not be available, which is acceptable
+                // RTVs will not be populated but functionality continues
+                if(AConstants.debug.get()) {
+                    System.out.println("Warning: Could not retrieve RTVs from control designer: " + e.getMessage());
+                }
+            }
 
             if(m!=null && m.getByteArray()!=null){
                 try{
