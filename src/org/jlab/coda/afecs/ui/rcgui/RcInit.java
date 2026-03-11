@@ -150,6 +150,17 @@ public class RcInit extends SwingWorker<String, Void> {
                     owner.getSessionMenu().addSeparator();
                 }
 
+                // Set session from command line/environment even if not registered in platform
+                if(owner.cl.getSession()!=null &&
+                   !owner.cl.getSession().equals(AConstants.udf) &&
+                   !owner.cl.getSession().trim().isEmpty()) {
+                    // Only set if it wasn't already set by finding a match above
+                    if(owner.getSessionTextField().getText().equals(AConstants.udf)) {
+                        owner.getSessionTextField().setText(owner.cl.getSession());
+                        owner._session = owner.cl.getSession();
+                    }
+                }
+
                 // Recreating rcGUI help documentation menu
                 owner.getHelpMenu().removeAll();
                 if(owner.platformDocs!=null && !owner.platformDocs.isEmpty()) {
