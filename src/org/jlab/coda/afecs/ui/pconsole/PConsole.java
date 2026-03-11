@@ -547,13 +547,14 @@ public class PConsole extends JFrame {
      *    it will draw that element in green.
      * </p>
      */
-    class ListRender extends JLabel implements ListCellRenderer {
+    class ListRender extends JLabel implements ListCellRenderer<String> {
 
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
+        @Override
         public Component getListCellRendererComponent(
-                JList list,              // the list
-                Object value,            // value to display
+                JList<? extends String> list,              // the list
+                String value,            // value to display
                 int index,               // cell index
                 boolean isSelected,      // is the cell selected
                 boolean cellHasFocus)    // does the cell have focus

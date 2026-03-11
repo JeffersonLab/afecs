@@ -99,6 +99,7 @@ public class AListDialog extends BaseDialogComponent {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void setupDialogContent() {
         okButton = new JButton();
         cancelButton = new JButton();

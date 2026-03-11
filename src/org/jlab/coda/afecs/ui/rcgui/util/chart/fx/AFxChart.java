@@ -161,6 +161,7 @@ public class AFxChart extends JFrame {
      * @param title  general title of the chart
      * @param yTitle yAxis title
      */
+    @SuppressWarnings("unchecked")
     private void _initFX(JFXPanel fxPanel, String title, String yTitle) {
         // minimum, maximum, how many xAxis steps the x number should be printed.
         xAxis = new NumberAxis(0,MAX_DATA_POINTS,MAX_DATA_POINTS/10);
@@ -219,6 +220,7 @@ public class AFxChart extends JFrame {
      *     Adds 20 numbers to the plot for each series
      * </p>
      */
+    @SuppressWarnings("unchecked")
     private void addDataToSeries() {
 
         for (int i = 0; i < 20; i++) { //-- add 20 numbers to the plot+

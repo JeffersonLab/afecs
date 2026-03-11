@@ -375,6 +375,7 @@ class StatusCB extends BaseMessageCallback {
      * @param map reference to the map received
      *            as part of the supervisor reporting.
      */
+    @SuppressWarnings("unchecked")
     private void updateGuiComponentsData(Map<String, AComponent> map) {
 
         for (AComponent comp : map.values()) {

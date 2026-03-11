@@ -144,6 +144,7 @@ public class ADialogList extends JDialog {
         dispose();
     }
 
+    @SuppressWarnings("unchecked")
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license

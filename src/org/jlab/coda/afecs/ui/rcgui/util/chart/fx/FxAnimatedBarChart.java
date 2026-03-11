@@ -99,6 +99,7 @@ public class FxAnimatedBarChart extends JFrame {
         this.setSize(width,height);
     }
 
+    @SuppressWarnings("unchecked")
     private void initFxComponents(final boolean isYFixed, final double yMax) {
 
         Platform.runLater(new Runnable() {
