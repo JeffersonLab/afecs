@@ -75,6 +75,8 @@ sourceSets {
     test {
         java {
             srcDirs = ['src/test']
+            // Exclude JinFlux tests as JinFlux is no longer used
+            exclude '**/JinFluxTest.java'
         }
     }
 }
@@ -194,6 +196,15 @@ distributions {
             }
         }
     }
+}
+
+// Configure duplicate handling for distribution tasks
+tasks.withType(Tar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(Zip) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // Generate wrapper for Gradle
