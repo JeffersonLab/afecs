@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+# AFECS Run Control GUI Launcher Script
+# Launches the RcGuiApplication using the fat JAR
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Define JAR path
+FAT_JAR="$PROJECT_ROOT/build/libs/afecs-all-4.0.0-SNAPSHOT-fat.jar"
+
+# Check if help is requested
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-help" ]]; then
+    cat << EOF
+AFECS Run Control GUI Launcher
+
+SYNOPSIS:
+    rcgui [OPTIONS]
+
+DESCRIPTION:
+    Launches the AFECS Run Control GUI (RcGuiApplication) - a graphical
+    interface for controlling and monitoring AFECS experiments.
+
+OPTIONS:
+    -s <session>        Session name to connect to
+    -e <expid>          Experiment ID (platform name)
+    -h <host>           Platform host name
+    -tp <port>          Platform TCP port number
+    -up <port>          Platform UDP port number (enables multicast)
+    -f <file>           XML configuration file name
+    -nofx               Disable JavaFX charts
+    -g                  Enable debug mode
+    -c                  Auto-connect to platform on startup
+    -m                  Monitor-only mode (read-only access)
+    -help, --help       Display this help message
+
+ENVIRONMENT:
+    EXPID               Experiment ID (if not specified with -e)
+    JAVA_OPTS           Additional JVM options
+
+EXAMPLES:
+    # Start GUI with auto-connect
+    rcgui -c
+
+    # Connect to specific platform and session
+    rcgui -h myhost -e myexpid -s mysession
+
+    # Start in monitor-only mode
+    rcgui -m -c
+
+    # Use specific configuration file
+    rcgui -f /path/to/config.xml
+
+    # Connect to platform on specific TCP port
+    rcgui -h platform.jlab.org -tp 45000
+
+NOTES:
+    - If EXPID is not provided via -e or environment, the GUI will
+      attempt to read it from the configuration file.
+    - The GUI can be started without connection parameters and
+      configured interactively.
+    - Use -nofx if you experience issues with JavaFX on your system.
+
+EOF
+    exit 0
+fi
+
+# Check if JAR exists
+if [ ! -f "$FAT_JAR" ]; then
+    echo "Error: Fat JAR not found at: $FAT_JAR"
+    echo "Please build the project first: ./gradlew fatJar"
+    exit 1
+fi
+
+# Set JVM options
+JVM_OPTS="${JAVA_OPTS:--Xms200m -Xmx2048m}"
+JVM_OPTS="$JVM_OPTS -Djava.net.preferIPv4Stack=true"
+
+# Launch the GUI
+exec java $JVM_OPTS -jar "$FAT_JAR" org.jlab.coda.afecs.ui.rcgui.RcGuiApplication "$@"

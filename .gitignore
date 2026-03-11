@@ -8,6 +8,9 @@ build/
 .project
 .settings/
 bin/
+!bin/*.sh
+!bin/platform
+!bin/rcgui
 
 # IntelliJ IDEA
 .idea/

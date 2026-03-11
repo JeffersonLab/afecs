@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# AFECS Platform Launcher Script
+# Launches the APlatform application using the fat JAR
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Define JAR path
+FAT_JAR="$PROJECT_ROOT/build/libs/afecs-all-4.0.0-SNAPSHOT-fat.jar"
+
+# Check if help is requested
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    cat << EOF
+AFECS Platform Launcher
+
+SYNOPSIS:
+    platform [OPTIONS]
+
+DESCRIPTION:
+    Launches the AFECS Platform (APlatform) - the main front-end container
+    for the Afecs control system.
+
+OPTIONS:
+    -archive        Start daLogMsg archiving normative agent
+    -debug          Activate debugging flag
+    -web            Enable web monitoring (InfluxDB integration)
+    -h, -help       Display this help message
+
+ENVIRONMENT:
+    EXPID           Experiment ID (platform name)
+    JAVA_OPTS       Additional JVM options
+
+EXAMPLES:
+    # Start platform normally
+    platform
+
+    # Start platform with debugging enabled
+    platform -debug
+
+    # Start platform with archiving and web monitoring
+    platform -archive -web
+
+NOTES:
+    The platform uses a configuration file (afecs.properties) from the
+    project root directory. Ensure it is properly configured before running.
+
+EOF
+    exit 0
+fi
+
+# Check if JAR exists
+if [ ! -f "$FAT_JAR" ]; then
+    echo "Error: Fat JAR not found at: $FAT_JAR"
+    echo "Please build the project first: ./gradlew fatJar"
+    exit 1
+fi
+
+# Set JVM options
+JVM_OPTS="${JAVA_OPTS:--Xms200m -Xmx2048m}"
+JVM_OPTS="$JVM_OPTS -Djava.net.preferIPv4Stack=true"
+
+# Launch the platform
+exec java $JVM_OPTS -jar "$FAT_JAR" org.jlab.coda.afecs.platform.APlatform "$@"
