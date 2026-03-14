@@ -79,12 +79,15 @@ class AControlDesigner extends ABase {
         myPlatform = platform;
         myName = AConstants.CONTROLDESIGNER;
 
+        System.out.println("Initializing ControlDesigner...");
+
         // Connect to the platform cMsg domain server
         myPlatformConnection = platformConnect();
         if (isPlatformConnected()) {
+            System.out.println("ControlDesigner connected to platform successfully.");
             subscribe();
         } else {
-            System.out.println(" Problem starting ControlDesigner. " +
+            System.out.println("ERROR: Problem starting ControlDesigner. " +
                     "Cannot connect to the platform.");
         }
     }
@@ -112,7 +115,10 @@ class AControlDesigner extends ABase {
                     new DesignerInfoCB(),
                     null);
 
+            System.out.println("ControlDesigner subscriptions completed successfully.");
+
         } catch (cMsgException e) {
+            System.out.println("ERROR: ControlDesigner subscription failed:");
             e.printStackTrace();
             stat = false;
         }
