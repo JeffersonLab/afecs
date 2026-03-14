@@ -146,6 +146,9 @@ class StatusCB extends BaseMessageCallback {
             d1[3] = s[3];
             d1[4] = s[4];
             d1[5] = s[5];
+            if(AConstants.debug.get()) {
+                System.out.println("DEBUG _updateTable: Adding/updating component " + d1[0] + " state=" + d1[1]);
+            }
             owner.dataTableFactory.addRcDataTable(d1);
         }
 
@@ -192,6 +195,12 @@ class StatusCB extends BaseMessageCallback {
             try {
                 if (msg.getByteArray() != null) {
                     cmpU = (Map<String, AComponent>) AfecsTool.B2O(msg.getByteArray());
+                    if(AConstants.debug.get() && cmpU != null) {
+                        System.out.println("DEBUG StatusCB: Received " + cmpU.size() + " components from supervisor:");
+                        for(AComponent c : cmpU.values()) {
+                            System.out.println("  - " + c.getName() + " state=" + c.getState());
+                        }
+                    }
                 }
             } catch (IOException | ClassNotFoundException e) {
 
@@ -583,6 +592,11 @@ class StatusCB extends BaseMessageCallback {
         _d[8] = comp.getRunType();
         _d[9] = comp.getType();
         _d[10] = comp.getName();
+
+        if(AConstants.debug.get()) {
+            System.out.println("DEBUG updateTableTreeData: Component " + comp.getName() +
+                " state=" + comp.getState() + " -> _data_m");
+        }
 
         try {
             _data_m.put(comp.getName(), _d);

@@ -258,11 +258,19 @@ public class ATableFactory {
             for (int i = 0; i < myTable.getRowCount(); i++) {
                 if (myTable.getValueAt(i, 0).equals(data[0])) {
                     found = true;
+                    if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
+                        System.out.println("DEBUG addRcDataTable: Component " + data[0] +
+                            " found at row " + i + ", calling updateRcDataTable with state=" + data[1]);
+                    }
                     break;
                 }
             }
 
             if (!found) {
+                if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
+                    System.out.println("DEBUG addRcDataTable: Component " + data[0] +
+                        " NOT found, adding new row with state=" + data[1]);
+                }
                 getTableModel().addRow(data);
             } else {
                 updateRcDataTable(data);
@@ -279,11 +287,19 @@ public class ATableFactory {
         try {
             for (int i = 0; i < myTable.getRowCount(); i++) {
                 if (myTable.getValueAt(i, 0).equals(data[0])) {
+                    if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
+                        System.out.println("DEBUG updateRcDataTable: Updating row " + i +
+                            " for component " + data[0] + " with state=" + data[1]);
+                        System.out.println("  Before: state=" + myTable.getValueAt(i, 1));
+                    }
                     myTable.setValueAt(data[1], i, 1);
                     myTable.setValueAt(data[2], i, 2);
                     myTable.setValueAt(data[3], i, 3);
                     myTable.setValueAt(data[4], i, 4);
                     myTable.setValueAt(data[5], i, 5);
+                    if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
+                        System.out.println("  After: state=" + myTable.getValueAt(i, 1));
+                    }
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
