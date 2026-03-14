@@ -16,9 +16,15 @@ group = 'org.jlab.coda'
 version = '4.0.0-SNAPSHOT'
 
 // Java version compatibility
+// Use Java 17 when JAVAFX_HOME is set (JavaFX 21+ requires Java 17)
+// Otherwise use Java 8 for backwards compatibility
+ext.javafxHome = System.getenv('JAVAFX_HOME')
+ext.javaVersion = (javafxHome != null && file("${javafxHome}/lib").exists()) ?
+    JavaVersion.VERSION_17 : JavaVersion.VERSION_1_8
+
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }
 
 repositories {
@@ -42,7 +48,6 @@ dependencies {
     implementation files('lib/jena.jar')
 
     // JavaFX: use $JAVAFX_HOME if available, otherwise fall back to lib/jfxrt.jar
-    def javafxHome = System.getenv('JAVAFX_HOME')
     if (javafxHome != null && file("${javafxHome}/lib").exists()) {
         println "Using JavaFX from JAVAFX_HOME: ${javafxHome}/lib"
         implementation fileTree(dir: "${javafxHome}/lib", include: '*.jar')
@@ -173,7 +178,6 @@ task fatJar(type: Jar) {
 
 // Helper to get JavaFX JVM args
 def getJavaFxJvmArgs() {
-    def javafxHome = System.getenv('JAVAFX_HOME')
     if (javafxHome != null && file("${javafxHome}/lib").exists()) {
         return ["--module-path", "${javafxHome}/lib",
                 "--add-modules", "javafx.controls,javafx.swing"]
