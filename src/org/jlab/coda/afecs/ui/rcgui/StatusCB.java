@@ -266,12 +266,21 @@ class StatusCB extends BaseMessageCallback {
                 if (msg.getPayloadItem(AConstants.STATE) != null) {
 
                     owner._runState = msg.getPayloadItem(AConstants.STATE).getString();
-                    if (!owner._runState.equals(AConstants.connected) &&
-                            !owner._runState.equals(AConstants.booted) &&
-                            tableUpdateFlag) {
-//                    if (owner._runState.equals(AConstants.downloaded) && tableUpdateFlag) {
+
+                    // Clear tables when transitioning TO connected/booted (reset scenario)
+                    // and set flag to allow clearing again after next transition away from these states
+                    if ((owner._runState.equals(AConstants.connected) ||
+                            owner._runState.equals(AConstants.booted)) &&
+                            !tableUpdateFlag) {
                         _data_m.clear();
                         owner._clearTables(false);
+                        tableUpdateFlag = true;
+                    }
+                    // When NOT in connected/booted states (configured, downloaded, etc.),
+                    // reset the flag so table can be cleared on next transition to connected/booted
+                    else if (!owner._runState.equals(AConstants.connected) &&
+                            !owner._runState.equals(AConstants.booted) &&
+                            tableUpdateFlag) {
                         tableUpdateFlag = false;
                     }
 
