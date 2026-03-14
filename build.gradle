@@ -155,19 +155,9 @@ task fatJar(type: Jar) {
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
 
-    // Exclude old Xerces and XML classes that conflict with Java 17 built-in XML APIs
-    // These are embedded in jena.jar and cause NoClassDefFoundError
-    exclude 'org/apache/xerces/**'
-    exclude 'org/apache/html/**'
-    exclude 'org/apache/wml/**'
-    exclude 'org/w3c/dom/**'
-    exclude 'org/xml/sax/**'
-
-    // Exclude service files that reference Xerces classes we removed
-    exclude 'META-INF/services/javax.xml.parsers.DocumentBuilderFactory'
-    exclude 'META-INF/services/javax.xml.parsers.SAXParserFactory'
-    exclude 'META-INF/services/org.apache.xerces.xni.parser.XMLParserConfiguration'
-    exclude 'META-INF/services/org.xml.sax.driver'
+    // Note: Xerces classes are included because Jena (RDF parser) requires them.
+    // To avoid conflicts with Java 17's built-in XML APIs, the launcher scripts
+    // set system properties to prefer Java's built-in parsers.
 
     manifest {
         attributes(
@@ -185,6 +175,14 @@ def getJavaFxJvmArgs() {
     return []
 }
 
+// Helper to get XML parser system properties (prefer Java's built-in parsers)
+def getXmlParserProperties() {
+    return [
+        'javax.xml.parsers.DocumentBuilderFactory': 'com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl',
+        'javax.xml.parsers.SAXParserFactory': 'com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl'
+    ]
+}
+
 // Task to run platform
 task runPlatform(type: JavaExec) {
     group = 'application'
@@ -192,6 +190,7 @@ task runPlatform(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.platform.APlatform'
     systemProperty 'java.net.preferIPv4Stack', 'true'
+    systemProperties getXmlParserProperties()
     jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 
@@ -202,6 +201,7 @@ task runContainer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.container.AContainer'
     systemProperty 'java.net.preferIPv4Stack', 'true'
+    systemProperties getXmlParserProperties()
     jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 
@@ -212,6 +212,7 @@ task runGui(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.ui.rcgui.RcGuiApplication'
     systemProperty 'java.net.preferIPv4Stack', 'true'
+    systemProperties getXmlParserProperties()
     jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 

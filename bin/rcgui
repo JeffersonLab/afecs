@@ -77,6 +77,10 @@ fi
 JVM_OPTS="${JAVA_OPTS:--Xms200m -Xmx2048m}"
 JVM_OPTS="$JVM_OPTS -Djava.net.preferIPv4Stack=true"
 
+# Set XML parser properties to use Java's built-in parsers (avoid Xerces conflicts)
+JVM_OPTS="$JVM_OPTS -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"
+JVM_OPTS="$JVM_OPTS -Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"
+
 # Add JavaFX to module path if JAVAFX_HOME is set
 JAVAFX_OPTS=""
 if [ -n "$JAVAFX_HOME" ] && [ -d "$JAVAFX_HOME/lib" ]; then
