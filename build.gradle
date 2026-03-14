@@ -40,7 +40,17 @@ dependencies {
     implementation files('lib/CChart.jar')
     implementation files('lib/jas-plotter-2.2.3.jar')
     implementation files('lib/jena.jar')
-    implementation files('lib/jfxrt.jar')
+
+    // JavaFX: use $JAVAFX_HOME if available, otherwise fall back to lib/jfxrt.jar
+    def javafxHome = System.getenv('JAVAFX_HOME')
+    if (javafxHome != null && file("${javafxHome}/lib").exists()) {
+        println "Using JavaFX from JAVAFX_HOME: ${javafxHome}/lib"
+        implementation fileTree(dir: "${javafxHome}/lib", include: '*.jar')
+    } else {
+        println "Using bundled JavaFX from lib/jfxrt.jar"
+        implementation files('lib/jfxrt.jar')
+    }
+
     implementation files('lib/JSAP-2.1.jar')
     implementation files('lib/jsch-0.1.50.jar')
     implementation files('lib/msql-jdbc-2-0b5.jar')
@@ -161,6 +171,16 @@ task fatJar(type: Jar) {
     }
 }
 
+// Helper to get JavaFX JVM args
+def getJavaFxJvmArgs() {
+    def javafxHome = System.getenv('JAVAFX_HOME')
+    if (javafxHome != null && file("${javafxHome}/lib").exists()) {
+        return ["--module-path", "${javafxHome}/lib",
+                "--add-modules", "javafx.controls,javafx.swing"]
+    }
+    return []
+}
+
 // Task to run platform
 task runPlatform(type: JavaExec) {
     group = 'application'
@@ -168,7 +188,7 @@ task runPlatform(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.platform.APlatform'
     systemProperty 'java.net.preferIPv4Stack', 'true'
-    jvmArgs = ['-Xms200m', '-Xmx2048m']
+    jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 
 // Task to run Container
@@ -178,7 +198,7 @@ task runContainer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.container.AContainer'
     systemProperty 'java.net.preferIPv4Stack', 'true'
-    jvmArgs = ['-Xms200m', '-Xmx2048m']
+    jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 
 // Task to run GUI
@@ -188,7 +208,7 @@ task runGui(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.jlab.coda.afecs.ui.rcgui.RcGuiApplication'
     systemProperty 'java.net.preferIPv4Stack', 'true'
-    jvmArgs = ['-Xms200m', '-Xmx2048m']
+    jvmArgs = ['-Xms200m', '-Xmx2048m'] + getJavaFxJvmArgs()
 }
 
 // Task to compile COOL

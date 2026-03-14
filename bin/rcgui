@@ -77,5 +77,11 @@ fi
 JVM_OPTS="${JAVA_OPTS:--Xms200m -Xmx2048m}"
 JVM_OPTS="$JVM_OPTS -Djava.net.preferIPv4Stack=true"
 
+# Add JavaFX to module path if JAVAFX_HOME is set
+JAVAFX_OPTS=""
+if [ -n "$JAVAFX_HOME" ] && [ -d "$JAVAFX_HOME/lib" ]; then
+    JAVAFX_OPTS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.swing"
+fi
+
 # Launch the GUI
-exec java $JVM_OPTS -cp "$FAT_JAR" org.jlab.coda.afecs.ui.rcgui.RcGuiApplication "$@"
+exec java $JVM_OPTS $JAVAFX_OPTS -cp "$FAT_JAR" org.jlab.coda.afecs.ui.rcgui.RcGuiApplication "$@"
