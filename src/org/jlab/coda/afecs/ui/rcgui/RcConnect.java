@@ -140,10 +140,16 @@ public class RcConnect extends SwingWorker<String, Void> {
             }
 
             // ask platform to parse config and report the list of agents
-            owner.base.p2pSend(AConstants.CONTROLDESIGNER,
-                    AConstants.DesignerInfoRequestControlAgents,
-                    al,
-                    AConstants.TIMEOUT);
+            try {
+                owner.base.p2pSend(AConstants.CONTROLDESIGNER,
+                        AConstants.DesignerInfoRequestControlAgents,
+                        al,
+                        AConstants.TIMEOUT);
+            } catch (AException e) {
+                if(AConstants.debug.get()) {
+                    System.out.println("Warning: Could not send control agents request to control designer: " + e.getMessage());
+                }
+            }
 
             /*
             // Ask platform registrar if supervisor is registered.
@@ -254,7 +260,10 @@ public class RcConnect extends SwingWorker<String, Void> {
                 owner.getConfigureButton().setEnabled(true);
             }
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            if(AConstants.debug.get()) {
+                System.out.println("Warning: Exception during connection: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
