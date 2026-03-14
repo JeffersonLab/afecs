@@ -450,13 +450,30 @@ public class APlatformRegistrar {
     public synchronized int incrementSessionRunNumber(String s){
         int rn=-1;
         int previous;
+
+        // Auto-create session if it doesn't exist
+        if(!SessionDir.containsKey(s)){
+            ASessionInfo newSession = new ASessionInfo();
+            newSession.setName(s);
+            newSession.setRunNumber(0);
+            SessionDir.put(s, newSession);
+            System.out.println("Auto-created session: " + s + " with initial run number 0");
+        }
+
         if(SessionDir.containsKey(s)){
             rn = SessionDir.get(s).getRunNumber();
             previous = rn;
+            System.out.println("Session: " + s + " - Current run number: " + previous);
             rn++;
             SessionDir.get(s).setRunNumber(rn);
             rn = SessionDir.get(s).getRunNumber();
-            if((rn-previous)!=1) rn = -1;
+            System.out.println("Session: " + s + " - New run number: " + rn + " (previous: " + previous + ")");
+            if((rn-previous)!=1) {
+                System.out.println("ERROR: Run number increment validation failed! rn=" + rn + ", previous=" + previous + ", diff=" + (rn-previous));
+                rn = -1;
+            }
+        } else {
+            System.out.println("ERROR: Session " + s + " not found in SessionDir after creation attempt!");
         }
         return rn;
     }
@@ -502,15 +519,28 @@ public class APlatformRegistrar {
     public boolean dumpSessionsDatabase(){
         boolean stat = true;
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
-            System.out.println("System constant coolHome is not defined.");
+            System.out.println("ERROR: System constant coolHome is not defined.");
             return false;
         }
+
+        String dbPath = sysConfig.getCoolHome() +
+                File.separator + sysConfig.getPlatformExpid() +
+                File.separator + "ddb";
+        String dbFile = dbPath + File.separator + "controlSessions.xml";
+
         try{
-            BufferedWriter out = new BufferedWriter(
-                    new FileWriter(sysConfig.getCoolHome()+
-                            File.separator + sysConfig.getPlatformExpid() +
-                            File.separator + "ddb" +
-                            File.separator + "controlSessions.xml"));
+            // Ensure directory exists
+            File dbDir = new File(dbPath);
+            if (!dbDir.exists()) {
+                System.out.println("Creating session database directory: " + dbPath);
+                if (!dbDir.mkdirs()) {
+                    System.out.println("ERROR: Failed to create directory: " + dbPath);
+                    return false;
+                }
+            }
+
+            System.out.println("Writing session database to: " + dbFile);
+            BufferedWriter out = new BufferedWriter(new FileWriter(dbFile));
             out.write("<control>\n");
             for(String cn: SessionDir.keySet()){
                 out.write("   <session>\n");
@@ -521,8 +551,10 @@ public class APlatformRegistrar {
             }
             out.write("</control>\n");
             out.close();
+            System.out.println("Session database saved successfully");
 
         } catch(IOException e){
+            System.out.println("ERROR: Failed to write session database:");
             stat = false;
             e.printStackTrace();
         }

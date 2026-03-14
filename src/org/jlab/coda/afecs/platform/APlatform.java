@@ -415,6 +415,7 @@ public class APlatform extends ABase {
                                                           String runType) {
         int cd = registrar.incrementSessionRunNumber(session);
         if (cd < 0) {
+            System.out.println("Platform: incrementSessionRunNumber returned " + cd + " for session: " + session);
             reportAlarmMsg(session + "/" +
                             runType,
                     myName,
@@ -427,7 +428,10 @@ public class APlatform extends ABase {
             return cd;
         } else {
             registrar.updateSessionRunType(session, runType);
-            registrar.dumpSessionsDatabase();
+            boolean dumpSuccess = registrar.dumpSessionsDatabase();
+            if (!dumpSuccess) {
+                System.out.println("WARNING: Failed to save session database to disk");
+            }
             return registrar.getSessionRunNumber(session);
         }
     }
