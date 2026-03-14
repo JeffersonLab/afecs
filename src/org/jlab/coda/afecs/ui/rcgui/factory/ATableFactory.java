@@ -255,12 +255,18 @@ public class ATableFactory {
     public void addRcDataTable(String[] data) {
         boolean found = false;
         try {
+            if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
+                System.out.println("DEBUG addRcDataTable: Looking for component '" + data[0] + "' in table with " + myTable.getRowCount() + " rows");
+                for (int j = 0; j < myTable.getRowCount(); j++) {
+                    System.out.println("  Row " + j + ": '" + myTable.getValueAt(j, 0) + "'");
+                }
+            }
             for (int i = 0; i < myTable.getRowCount(); i++) {
                 if (myTable.getValueAt(i, 0).equals(data[0])) {
                     found = true;
                     if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
-                        System.out.println("DEBUG addRcDataTable: Component " + data[0] +
-                            " found at row " + i + ", calling updateRcDataTable with state=" + data[1]);
+                        System.out.println("DEBUG addRcDataTable: Component '" + data[0] +
+                            "' found at row " + i + ", calling updateRcDataTable with state=" + data[1]);
                     }
                     break;
                 }

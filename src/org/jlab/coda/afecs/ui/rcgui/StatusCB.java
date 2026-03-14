@@ -138,6 +138,9 @@ class StatusCB extends BaseMessageCallback {
         if (_outputFileStatus.equals("disabled")) {
             //@todo write on the main gui "Attention: Data Output is disabled ..."
         }
+        if(AConstants.debug.get()) {
+            System.out.println("DEBUG gui_update: Iterating through _data_m components:");
+        }
         for (String s[] : _data_m.values()) {
             String[] d1 = new String[6];
             d1[0] = s[0];
