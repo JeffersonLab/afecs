@@ -148,6 +148,12 @@ task fatJar(type: Jar) {
     exclude 'org/w3c/dom/**'
     exclude 'org/xml/sax/**'
 
+    // Exclude service files that reference Xerces classes we removed
+    exclude 'META-INF/services/javax.xml.parsers.DocumentBuilderFactory'
+    exclude 'META-INF/services/javax.xml.parsers.SAXParserFactory'
+    exclude 'META-INF/services/org.apache.xerces.xni.parser.XMLParserConfiguration'
+    exclude 'META-INF/services/org.xml.sax.driver'
+
     manifest {
         attributes(
             'Main-Class': 'org.jlab.coda.afecs.platform.APlatform'
