@@ -1396,8 +1396,15 @@ public class SupervisorAgent extends AParent implements Serializable {
     }
 
 
-    private void checkComponents() {
+    public void checkComponents() {
+        if(AConstants.debug.get()) {
+            System.out.println("DEBUG checkComponents: myComponents.size()=" + myComponents.size());
+        }
         for (CodaRCAgent ac : myComponents.values()) {
+            if(AConstants.debug.get()) {
+                System.out.println("DEBUG checkComponents: Updating " + ac.me.getName() +
+                    " state=" + ac.me.getState() + " in sortedComponentList");
+            }
             sortedComponentList.put(ac.me.getName(), ac.me);
             if (myCompReportingTimes.containsKey(ac.me.getName())) {
                 myCompReportingTimes.get(ac.me.getName()).setCurrentReportingTime(new Date().getTime());

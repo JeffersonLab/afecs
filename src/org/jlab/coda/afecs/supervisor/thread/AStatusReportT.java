@@ -226,8 +226,17 @@ public class AStatusReportT extends Thread {
 
                 if (!owner.sortedComponentList.isEmpty()) {
 
+                    // Update sortedComponentList with current component states from myComponents
+                    owner.checkComponents();
+
                     // report agent states to all GUIs
                     // fileWriting report tot GUI
+                    if(AConstants.debug.get()) {
+                        System.out.println("DEBUG AStatusReportT: Sending " + owner.sortedComponentList.size() + " components to GUI:");
+                        for(AComponent c : owner.sortedComponentList.values()) {
+                            System.out.println("  - " + c.getName() + " state=" + c.getState());
+                        }
+                    }
                     owner.send(AConstants.GUI,
                             owner.me.getSession() + "_" + owner.me.getRunType() + "/agents",
                             owner.s_fileWriting,
