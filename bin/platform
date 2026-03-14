@@ -61,4 +61,4 @@ JVM_OPTS="${JAVA_OPTS:--Xms200m -Xmx2048m}"
 JVM_OPTS="$JVM_OPTS -Djava.net.preferIPv4Stack=true"
 
 # Launch the platform
-exec java $JVM_OPTS -jar "$FAT_JAR" org.jlab.coda.afecs.platform.APlatform "$@"
+exec java $JVM_OPTS -cp "$FAT_JAR" org.jlab.coda.afecs.platform.APlatform "$@"
