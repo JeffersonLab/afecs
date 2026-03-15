@@ -214,12 +214,26 @@ class StatusCB extends BaseMessageCallback {
             // sort according to their types
             Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
 
+            if(AConstants.debug.get()) {
+                System.out.println("DEBUG StatusCB: After getSortedByType, cmp has " + cmp.size() + " components:");
+                for(AComponent c : cmp.values()) {
+                    System.out.println("  - " + c.getName() + " state=" + c.getState());
+                }
+            }
+
             if (msg.getSender().contains("sms_")) {
                 if (cmp.isEmpty()) {
                     cmp = cmpU;
                 }
             } else {
                 cmp = cmpU;
+            }
+
+            if(AConstants.debug.get()) {
+                System.out.println("DEBUG StatusCB: After sender check, cmp has " + cmp.size() + " components:");
+                for(AComponent c : cmp.values()) {
+                    System.out.println("  - " + c.getName() + " state=" + c.getState());
+                }
             }
 
 
@@ -399,7 +413,18 @@ class StatusCB extends BaseMessageCallback {
     @SuppressWarnings("unchecked")
     private void updateGuiComponentsData(Map<String, AComponent> map) {
 
+        if(AConstants.debug.get()) {
+            System.out.println("DEBUG updateGuiComponentsData: Processing " + map.size() + " components:");
+            for(AComponent c : map.values()) {
+                System.out.println("  - " + c.getName() + " state=" + c.getState());
+            }
+        }
+
         for (AComponent comp : map.values()) {
+
+            if(AConstants.debug.get()) {
+                System.out.println("DEBUG updateGuiComponentsData: Iterating component " + comp.getName() + " state=" + comp.getState());
+            }
 
             // update/add new reporting component's subset of the data
             // to the local reporting components map,
