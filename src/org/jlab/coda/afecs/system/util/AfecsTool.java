@@ -814,6 +814,12 @@ public class AfecsTool {
                 res.put(aComponent.getName(), aComponent);
             }
         }
+        // Add any components with unknown types that weren't included above
+        for(AComponent cmp:cps.values()){
+            if(!res.containsKey(cmp.getName())){
+                res.put(cmp.getName(), cmp);
+            }
+        }
         return res;
     }
 
