@@ -303,8 +303,14 @@ public class ATableFactory {
                     myTable.setValueAt(data[3], i, 3);
                     myTable.setValueAt(data[4], i, 4);
                     myTable.setValueAt(data[5], i, 5);
+
+                    // Explicitly notify table model and force repaint
+                    mmm.fireTableRowsUpdated(i, i);
+                    myTable.repaint();
+
                     if(org.jlab.coda.afecs.system.AConstants.debug.get()) {
                         System.out.println("  After: state=" + myTable.getValueAt(i, 1));
+                        System.out.println("  Fired table update event and repaint for row " + i);
                     }
                 }
             }
