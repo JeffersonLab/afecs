@@ -80,6 +80,32 @@ public class AStatusReportT extends Thread {
                     owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
                     owner.me.getRunTimeDataAsPayload());
 
+            // Update Prometheus supervisor metrics
+            if (owner.prometheusExporter != null) {
+                owner.prometheusExporter.updateSupervisorMetrics(owner.me, owner.s_fileWriting);
+
+                // Update run limits if available
+                if (owner.me.getEventLimit() > 0 || owner.me.getDataLimit() > 0 || owner.me.getTimeLimit() > 0) {
+                    owner.prometheusExporter.updateRunLimits(
+                        owner.me.getSession(),
+                        owner.me.getRunType(),
+                        owner.me.getEventLimit(),
+                        owner.me.getDataLimit(),
+                        owner.me.getTimeLimit(),
+                        owner.autoStart.get() ? "on" : "off",
+                        owner._numberOfRuns
+                    );
+                }
+
+                // Update run timing
+                owner.prometheusExporter.updateRunTiming(
+                    owner.me.getSession(),
+                    owner.me.getRunType(),
+                    owner.me.getRunStartTime(),
+                    owner.me.getRunEndTime()
+                );
+            }
+
             // aggregate ER class component parameters
             if (owner.sortedComponentList.containsKey("ER_class")) {
                 long eventNumber = 0L;
@@ -228,6 +254,15 @@ public class AStatusReportT extends Thread {
 
                     // Update sortedComponentList with current component states from myComponents
                     owner.checkComponents();
+
+                    // Update Prometheus component metrics
+                    if (owner.prometheusExporter != null) {
+                        owner.prometheusExporter.updateComponentMetrics(
+                            owner.sortedComponentList,
+                            owner.me.getSession(),
+                            owner.me.getRunType()
+                        );
+                    }
 
                     // report agent states to all GUIs
                     // fileWriting report tot GUI

@@ -180,6 +180,9 @@ public class SupervisorAgent extends AParent implements Serializable {
     // Thread that runs a described service
     transient private ServiceExecutionT serviceExecutionThread;
 
+    // Prometheus metrics exporter
+    transient public PrometheusExporter prometheusExporter;
+
 
     transient public SimpleDateFormat startEndFormatter =
             new SimpleDateFormat("MM/dd/yy HH:mm:ss");
@@ -264,6 +267,20 @@ public class SupervisorAgent extends AParent implements Serializable {
 
         mySelf = this;
 
+        // Initialize and start Prometheus exporter
+        // Port can be configured via -Dprometheus.port=9090 (default: 9090)
+        prometheusExporter = new PrometheusExporter(this);
+        int prometheusPort = Integer.getInteger("prometheus.port", 9090);
+        try {
+            prometheusExporter.start(prometheusPort);
+        } catch (IOException e) {
+            System.err.println("WARNING: Failed to start Prometheus exporter on port " + prometheusPort);
+            System.err.println("  Metrics will not be available. Error: " + e.getMessage());
+            if (AConstants.debug.get()) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**
@@ -279,6 +296,11 @@ public class SupervisorAgent extends AParent implements Serializable {
         _un_subscribe_all();
         platformDisconnect();
         wasConfigured = false;
+
+        // Stop Prometheus exporter
+        if (prometheusExporter != null) {
+            prometheusExporter.stop();
+        }
     }
 
     /**
@@ -296,6 +318,11 @@ public class SupervisorAgent extends AParent implements Serializable {
         stopAgentMonitors();
         // Reset all local maps.
         sUtility.clearLocalRegister();
+
+        // Clear Prometheus component metrics on reset
+        if (prometheusExporter != null) {
+            prometheusExporter.clearComponentMetrics(me.getSession(), me.getRunType());
+        }
     }
 
     /**

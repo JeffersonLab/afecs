@@ -42,6 +42,11 @@ repositories {
 }
 
 dependencies {
+    // Prometheus Java client for metrics export
+    implementation 'io.prometheus:simpleclient:0.16.0'
+    implementation 'io.prometheus:simpleclient_httpserver:0.16.0'
+    implementation 'io.prometheus:simpleclient_hotspot:0.16.0'
+
     // Local JAR dependencies from lib/
     implementation files('lib/CChart.jar')
     implementation files('lib/jas-plotter-2.2.3.jar')
