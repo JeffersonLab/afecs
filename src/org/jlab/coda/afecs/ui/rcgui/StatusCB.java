@@ -201,7 +201,7 @@ class StatusCB extends BaseMessageCallback {
                     if(AConstants.debug.get() && cmpU != null) {
                         System.out.println("DEBUG StatusCB: Received " + cmpU.size() + " components from supervisor:");
                         for(AComponent c : cmpU.values()) {
-                            System.out.println("  - " + c.getName() + " state=" + c.getState());
+                            System.out.println("  - " + c.getName() + " type=" + c.getType() + " state=" + c.getState());
                         }
                     }
                 }
