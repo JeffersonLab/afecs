@@ -1,0 +1,177 @@
+# AFECS Prometheus Alert Rules
+# These rules define alerts for common AFECS DAQ issues
+
+groups:
+  - name: afecs_critical
+    interval: 30s
+    rules:
+      # Component completely disconnected
+      - alert: AFECSComponentDisconnected
+        expr: afecs_component_state == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AFECS component {{ $labels.component }} disconnected"
+          description: "Component {{ $labels.component }} (type={{ $labels.type }}) in session {{ $labels.session }} runtype {{ $labels.runtype }} is disconnected for more than 1 minute."
+          runbook: "Check component logs and network connectivity. May require component restart."
+
+      # Supervisor in error state
+      - alert: AFECSSupervisorError
+        expr: afecs_supervisor_state == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "AFECS supervisor disconnected in {{ $labels.session }}"
+          description: "Supervisor for session {{ $labels.session }} runtype {{ $labels.runtype }} is in disconnected state."
+          runbook: "Check supervisor logs. Supervisor may have crashed or lost platform connection."
+
+  - name: afecs_warning
+    interval: 30s
+    rules:
+      # Buffer depth approaching full
+      - alert: AFECSHighBufferDepth
+        expr: afecs_component_buffer_depth_percent > 90
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High buffer depth on {{ $labels.component }}"
+          description: "Buffer {{ $labels.buffer_name }} ({{ $labels.buffer }}) on component {{ $labels.component }} is {{ $value }}% full. May cause backpressure."
+          runbook: "Monitor buffer trends. May indicate slow downstream component or high event rate."
+
+      # Event rate dropped significantly during active run
+      - alert: AFECSLowEventRate
+        expr: |
+          afecs_supervisor_state{session!=""} == 5 and
+          afecs_supervisor_event_rate_hz < 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low event rate in {{ $labels.session }}"
+          description: "Event rate is {{ $value | humanize }} Hz (expected >100 Hz) in session {{ $labels.session }} runtype {{ $labels.runtype }}."
+          runbook: "Check ROC and TS components. Verify trigger rates. Check for component errors."
+
+      # Event rate went to zero during active run
+      - alert: AFECSNoEvents
+        expr: |
+          afecs_supervisor_state == 5 and
+          afecs_supervisor_event_rate_hz == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No events in active run {{ $labels.session }}"
+          description: "Event rate is zero in session {{ $labels.session }} runtype {{ $labels.runtype }} for more than 2 minutes."
+          runbook: "Check trigger system. Verify TS and ROC components are active. Check for hardware issues."
+
+      # Data rate unusually high
+      - alert: AFECSHighDataRate
+        expr: afecs_supervisor_data_rate_bytes_per_second > 1e9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High data rate in {{ $labels.session }}"
+          description: "Data rate is {{ $value | humanize }}B/s (>1 GB/s) in session {{ $labels.session }}."
+          runbook: "Monitor disk I/O and network bandwidth. Ensure recording system can keep up."
+
+  - name: afecs_info
+    interval: 60s
+    rules:
+      # Approaching event limit (90%)
+      - alert: AFECSEventLimitApproaching
+        expr: |
+          afecs_run_event_limit > 0 and
+          (afecs_supervisor_events_total / afecs_run_event_limit) > 0.9
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Approaching event limit in {{ $labels.session }}"
+          description: "Run has processed {{ $value | humanizePercentage }} of the {{ $labels.value }} event limit."
+          runbook: "Run will auto-stop when limit is reached. This is informational."
+
+      # Approaching data limit (90%)
+      - alert: AFECSDataLimitApproaching
+        expr: |
+          afecs_run_data_limit_bytes > 0 and
+          (afecs_supervisor_data_bytes_total / afecs_run_data_limit_bytes) > 0.9
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Approaching data limit in {{ $labels.session }}"
+          description: "Run has recorded {{ $value | humanizePercentage }} of the data limit."
+          runbook: "Run will auto-stop when limit is reached. This is informational."
+
+      # Long-running active state (>12 hours)
+      - alert: AFECSLongRunningRun
+        expr: |
+          afecs_supervisor_state == 5 and
+          (time() - afecs_run_start_timestamp_seconds) > 43200
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Long running session {{ $labels.session }}"
+          description: "Run has been active for {{ humanizeDuration $value }} hours."
+          runbook: "Verify this is intentional. Long runs may need periodic restarts."
+
+  - name: afecs_performance
+    interval: 30s
+    rules:
+      # Component live time below threshold
+      - alert: AFECSLowLiveTime
+        expr: |
+          afecs_supervisor_state == 5 and
+          afecs_component_livetime_percent < 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low live time on {{ $labels.component }}"
+          description: "Component {{ $labels.component }} has {{ $value }}% live time (expected >85%)."
+          runbook: "Check component for performance issues. High dead time may indicate processing bottleneck."
+
+      # Event build time unusually high
+      - alert: AFECSHighBuildTime
+        expr: afecs_component_build_time_mean_microseconds{type="EB"} > 10000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High event build time on {{ $labels.component }}"
+          description: "Event builder {{ $labels.component }} has mean build time of {{ $value }} µs (>10ms)."
+          runbook: "Check EB performance. May indicate slow network or high event complexity."
+
+  - name: afecs_state_transitions
+    interval: 15s
+    rules:
+      # Stuck in transitioning state
+      - alert: AFECSStuckInTransition
+        expr: |
+          afecs_supervisor_state{session!=""} < 1 or
+          afecs_supervisor_state{session!=""} > 8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Supervisor stuck in transition {{ $labels.session }}"
+          description: "Supervisor has been in transitioning state for more than 5 minutes."
+          runbook: "Check for hung components. May need reset or component restart."
+
+      # File writing disabled unexpectedly
+      - alert: AFECSFileWritingDisabled
+        expr: |
+          afecs_supervisor_state == 5 and
+          afecs_file_writing_enabled == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "File writing disabled in active run {{ $labels.session }}"
+          description: "File writing is disabled during active run in session {{ $labels.session }}."
+          runbook: "Verify this is intentional. Enable file writing if data recording is required."
